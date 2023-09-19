@@ -18,6 +18,7 @@ body {
 }
 
 .wrapper {
+    position: relative;
     width: 420px;
     background: transparent;
     border: 2px solid rgba(255, 255, 255, rgba(255,255,255, .2));
@@ -26,6 +27,9 @@ body {
     color: #fff;
     border-radius: 10px;
     padding: 30px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .wrapper h1 {
@@ -52,6 +56,9 @@ body {
     color: #fff;
     padding: 20px 45px 20px 20px;
 }
+
+
+
 
 .input-box input::placeholder {
     color: #fff;    
