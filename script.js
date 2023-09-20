@@ -4,12 +4,6 @@ const registerLink = document.querySelector('.register-link');
 const btn = document.querySelector('.btn');
 
 
-
-
-
-
-
-
 registerLink.addEventListener('click', ()=> {
     wrapper.classList.add('active');
 })
