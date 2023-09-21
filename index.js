@@ -1,87 +1,57 @@
 const express = require("express")
 const app = express()
 const path = require("path")
-
 const { DocumentStore } = require('ravendb');
-
 const port = 3000; // Cambia el puerto según tu preferencia
-
 const store = new DocumentStore('http://127.0.0.1:8080', 'TecVegetal');
 store.initialize();
-
 const session = store.openSession();
 
-// Función para realizar una prueba de conexión
-async function testConnection() {
-    try {
-      // Abre una sesión de RavenDB
-      const session = store.openSession();
-  
-      let product = {
-        title: 'iPhone X',
-        price: 999.99,
-        currency: 'USD',
-        storage: 64,
-        manufacturer: 'Apple',
-        in_stock: true,
-        last_update: new Date('2017-10-01T00:00:00'),
-        "@metadata": {
-            "@collection": "Products"
-        }
-    };
+app.use(express.urlencoded({extended:false}))
+const publicPath = path.join(__dirname, 'public')
+console.log(publicPath);
+app.set('view engine', 'ejs')
+app.set('views', path.join(__dirname, 'views'))
+app.use(express.static(publicPath))
 
-      // Realiza una operación de prueba (p. ej., consulta un documento ficticio)
-      const result = await session.store(product, 'Products/');
-      session.saveChanges();
-      console.log('Conexión exitosa a RavenDB');
-      console.log('Resultado de prueba:', result);
-    } catch (error) {
-      console.error('Error de conexión a RavenDB:', error);
-    } finally {
-      // Cierra la sesión de RavenDB
-      session.dispose();
+app.get('/', (req, res) => {
+  res.render('index');
+});
+
+app.post("/login", function(req, res) {
+    var user = req.body.username;
+    var password = req.body.password;
+    session.query({collection : "Users"}).whereEquals('username', user).all().then(result =>{
+      if(result[0].password == password)
+        res.render('mainPage')
+    })
+})
+
+app.post("/register", function(req, res){
+    var user = req.body.usernameR;
+    var password = req.body.passR;
+    var nombre = req.body.nombre_completo;
+    let usuario = {
+      username : user,
+      password : password,
+      nombre : nombre,
+      "@metadata": {
+        "@collection": "Users"
+      }
     }
-  }
-  
-  // Ejecuta la función de prueba de conexión
-  testConnection();
-
-
-
-/*
-async function saveData() {
-    let product = {
-        id: '1',
-        title: 'iPhone X',
-        price: 999.99,
-        currency: 'USD',
-        storage: 64,
-        manufacturer: 'Apple',
-        in_stock: true,
-        last_update: new Date('2017-10-01T00:00:00')
-    };
+    try {
+      session.store(usuario, 'Users/')
+      session.saveChanges();
+    } catch (error) {
+      console.log(error)
+    }
+    session.dispose();
     
-    await session.store(product);
-    console.log(product.id); // products/1-A
-    await session.saveChanges();
-
-}
-
-saveData();
-
-*/
-
-
-
-
-
-
-
-
+})
 
 // Configura middleware para procesar solicitudes JSON
 app.use(express.json());
 
-app.listen(3000, ()=>{
+app.listen(port, ()=>{
     console.log("port connected")
 })
