@@ -1,0 +1,223 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap");
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: url(Imagenes/aaa.png) no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
+
+.wrapper {
+    position: relative;
+    width: 420px;
+    background: transparent;
+    border: 2px solid rgba(255, 255, 255, rgba(255,255,255, .2));
+    border-radius: 10px;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 0 10px rgba(0, 0, 0, .2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: height .2s ease;
+    overflow: hidden;
+}
+
+.wrapper.active {
+    height: 600px;
+
+}
+
+.form-box h2{
+    font-size: 2em;
+    color: #fff;
+    text-align: center;
+}
+
+.wrapper .form-box.login{
+    transition: transform .18s ease;
+    transform: translateX(0);
+    
+}
+
+.wrapper.active .form-box.register{
+    transition: transform .18s ease;
+    transform: translateX(0);
+    
+}
+
+.wrapper.active .form-box.login{
+    transition: none;
+    transform: translateX(-400px);
+}
+
+.wrapper .form-box.register {
+    position: absolute;
+    transition: none;
+    transform: translateX(400px);
+}
+
+.wrapper .form-box{
+    width: 100%;
+    padding: 40px;
+}
+
+.input-box {
+    position: relative;
+    width: 100%;
+    height: 50px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 40px;
+    margin: 30px 0;
+}
+
+.input-date {
+    position: relative;
+    width: 100%;
+    height: 50px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 40px;
+    margin: 30px 0;
+}
+
+.input-box i{
+    position: absolute;
+    right: 13px;
+    font-size: 1.2em;
+    color: #fff;
+    line-height: 47px;
+}
+
+.input-box label{
+    position: absolute;
+    top: 50%;
+    left: 10px;
+    transform: translateY(-50%);
+    font-size: 1em;
+    color:#fff;
+    font-weight: 500;
+    pointer-events: none;
+    transition: .5s;
+}
+
+.input-date label{
+    position: absolute;
+    top: -5%;
+    left: 10px;
+    transform: translateY(-50%);
+    font-size: 1em;
+    color:#fff;
+    font-weight: 500;
+    pointer-events: none;
+    transition: .5s;
+}
+
+.input-date input{
+    position: absolute;
+    top: 50%;
+    left: 10px;
+    transform: translateY(-50%);
+    font-size: 1em;
+    background: transparent;
+    border: none;
+    color:#fff;
+    font-weight: 500;
+}
+
+.input-pic {
+    position: relative;
+    width: 100%;
+    height: 50px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 40px;
+    margin: 30px 0;
+}
+
+.input-pic label{
+    position: absolute;
+    top: -5%;
+    left: 10px;
+    transform: translateY(-50%);
+    font-size: 1em;
+    color:#fff;
+    font-weight: 500;
+    pointer-events: none;
+    transition: .5s;
+}
+
+.input-pic input{
+    position: absolute;
+    top: 50%;
+    left: 10px;
+    transform: translateY(-50%);
+    font-size: 1em;
+    background: transparent;
+    border: none;
+    color:#fff;
+    font-weight: 500;
+}
+
+.input-box input{
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-size: 1em;
+    color: #fff;
+    font-weight: 600;
+    padding: 0 35px 0 5px;
+}
+
+.btn {
+    width: 100%;
+    height: 45px;
+    background: #fff;
+    border-radius: 40px;
+    outline: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1em;
+    color: #000;
+    font-weight: 500;
+}
+
+.login-register{
+    font-size: .9em;
+    color: #fff;
+    text-align: center;
+    font-weight: 400;
+    margin: 25px 0 10px
+}
+
+.login-register p a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.login-register p a:hover {
+    text-decoration: underline;
+}
+
+.input-box input:focus~label,
+.input-box input:valid~label{
+    top: -5px;
+}
+
+
+
+
+
+
+
