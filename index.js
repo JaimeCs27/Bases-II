@@ -12,6 +12,7 @@ const ravenConection = new DocumentStore('http://127.0.0.1:8080', 'TecVegetal');
 ravenConection.initialize();
 const ravenSession = ravenConection.openSession();
 
+
 //Conexion con Mongo
 const mongo = require("mongoose");
 mongo.connect("mongodb://localhost:27017/TecVegetal")
@@ -21,6 +22,9 @@ mongo.connect("mongodb://localhost:27017/TecVegetal")
 .catch(() =>{
     console.log("mongo not connected");
 })
+
+//Conexion con Neoj4
+const driver = neo4j.driver('bolt://localhost');
 
 app.use(express.urlencoded({extended:false}))
 const publicPath = path.join(__dirname, 'public')
