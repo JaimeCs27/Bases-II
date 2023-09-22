@@ -1,11 +1,26 @@
 const express = require("express")
 const app = express()
 const path = require("path")
-const { DocumentStore } = require('ravendb');
 const port = 3000; // Cambia el puerto según tu preferencia
-const store = new DocumentStore('http://127.0.0.1:8080', 'TecVegetal');
-store.initialize();
-const session = store.openSession();
+
+
+
+
+//Conexion con Raven
+const { DocumentStore } = require('ravendb');
+const ravenConection = new DocumentStore('http://127.0.0.1:8080', 'TecVegetal');
+ravenConection.initialize();
+const ravenSession = ravenConection.openSession();
+
+//Conexion con Mongo
+const mongo = require("mongoose");
+mongo.connect("mongodb://localhost:27017/TecVegetal")
+.then(() => {
+    console.log("mongodb connected");
+})
+.catch(() =>{
+    console.log("mongo not connected");
+})
 
 app.use(express.urlencoded({extended:false}))
 const publicPath = path.join(__dirname, 'public')
@@ -21,7 +36,7 @@ app.get('/', (req, res) => {
 app.post("/login", function(req, res) {
     var user = req.body.username;
     var password = req.body.password;
-    session.query({collection : "Users"}).whereEquals('username', user).all().then(result =>{
+    ravenSession.query({collection : "Users"}).whereEquals('username', user).all().then(result =>{
       if(result[0].password == password)
         res.render('mainPage')
     })
@@ -40,12 +55,12 @@ app.post("/register", function(req, res){
       }
     }
     try {
-      session.store(usuario, 'Users/')
-      session.saveChanges();
+      ravenSession.store(usuario, 'Users/')
+      ravenSession.saveChanges();
     } catch (error) {
       console.log(error)
     }
-    session.dispose();
+    ravenSession.dispose();
     
 })
 
