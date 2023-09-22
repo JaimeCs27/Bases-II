@@ -14,17 +14,21 @@ const ravenSession = ravenConection.openSession();
 
 
 //Conexion con Mongo
-const mongo = require("mongoose");
-mongo.connect("mongodb://localhost:27017/TecVegetal")
-.then(() => {
-    console.log("mongodb connected");
+const mongoose = require('mongoose')
+const uri = 'mongodb://127.0.0.1:27017/TecVegetal'
+mongoose.connect(uri, {
+    useUnifiedTopology: true,
+    useNewUrlParser: true
 })
-.catch(() =>{
-    console.log("mongo not connected");
-})
+.then(db => console.log('Mongo is connected'))
+.catch(err => console.log(err))
+
 
 //Conexion con Neoj4
-const driver = neo4j.driver('bolt://localhost');
+const neo4j = require('neo4j-driver')
+const driver = neo4j.driver('bolt://127.0.0.1', neo4j.auth.basic('neo4j', '20040309'));
+const neo4jSession = driver.session() 
+
 
 app.use(express.urlencoded({extended:false}))
 const publicPath = path.join(__dirname, 'public')
@@ -40,10 +44,14 @@ app.get('/', (req, res) => {
 app.post("/login", function(req, res) {
     var user = req.body.username;
     var password = req.body.password;
-    ravenSession.query({collection : "Users"}).whereEquals('username', user).all().then(result =>{
-      if(result[0].password == password)
-        res.render('mainPage')
-    })
+    try{
+      ravenSession.query({collection : "Users"}).whereEquals('username', user).all().then(result =>{
+        if(result[0].password == password)
+          res.render('mainPage')
+      })
+    }catch(error){
+      console.log(error)
+    }
 })
 
 app.post("/register", function(req, res){
