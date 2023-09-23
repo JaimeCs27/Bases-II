@@ -30,6 +30,13 @@ const driver = neo4j.driver('bolt://127.0.0.1', neo4j.auth.basic('neo4j', '20040
 const neo4jSession = driver.session() 
 
 
+//Conexion con OrientDB
+const Orient = require("orientjs").OrientDBClient;
+const orientSession = Orient.connect({
+    host: "127.0.0.1",
+    port: 2424
+})
+
 app.use(express.urlencoded({extended:false}))
 const publicPath = path.join(__dirname, 'public')
 console.log(publicPath);
