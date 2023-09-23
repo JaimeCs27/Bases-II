@@ -26,8 +26,45 @@ mongoose.connect(uri, {
 
 //Conexion con Neoj4
 const neo4j = require('neo4j-driver')
-const driver = neo4j.driver('bolt://127.0.0.1', neo4j.auth.basic('neo4j', '20040309'));
+const driver = neo4j.driver('bolt://127.0.0.1', neo4j.auth.basic('si', '12345678'));
 const neo4jSession = driver.session() 
+
+async function testNeo4jConnection() {
+  const session = driver.session();
+  var title = 'Sebitas'
+  const year = 2013
+
+  try {
+    // Ejecuta una consulta simple para verificar la conexión
+    const result = await session.run('CREATE (n:Users {title:$titleParam}) RETURN n', {titleParam : title})
+    .then(function(result){
+        result.records.forEach(function(record){
+            console.log(record._fields[0].properties.title)
+        })
+    })
+    .catch(function(error){
+        console.log(error);
+    });
+
+  } catch (error) {
+    console.error('Error al conectar a Neo4j:', error);
+  } finally {
+    // Cierra la sesión
+    session.close();
+  }
+}
+
+testNeo4jConnection()
+  .then(() => {
+    // Cierra la conexión cuando hayas terminado
+    driver.close();
+  })
+  .catch(error => {
+    console.error('Error al probar la conexión a Neo4j:', error);
+  });
+
+
+
 
 
 //Conexion con OrientDB
