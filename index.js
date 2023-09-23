@@ -29,14 +29,63 @@ const neo4j = require('neo4j-driver')
 const driver = neo4j.driver('bolt://127.0.0.1', neo4j.auth.basic('si', '12345678'));
 const neo4jSession = driver.session() 
 
+/*
+//Conexion con Orient
+const orient = require('orientjs').OrientDBClient
+const orientConection = orient.connect({
+    host: "localhost",
+    port: 2424
+}).then(client =>{
+  client.session({ name: "demoDB", username: "root", password: "20040309" })
+  .then(session => {
+    // use the session
+    session.query('select from Persona where name := jaime')
+    .all()
+    .then((results)=>{
+      console.log(results)
+    })
+    // close the session
+    return session.close();
+  });
+}).then(() => {
+  console.log('client closed')
+}).catch(error => {
+  console.log(error)
+})
+*/
+// Create OrientDB server connection
+var OrientDB = require('orientjs');
+
+var server = OrientDB({
+  host:     'localhost',
+  port:     2424,
+  username: 'root',
+  password: '20040309',
+  useToken: true
+});
+
+// Use OrientDB server to connect to a specific database
+var dbOrient = server.use({
+   name: 'prueba',
+   username: 'root',
+   password: '20040309',
+   useToken : true
+});
+
+dbOrient.query("select * from Person")
+.then((result) =>{
+  console.log(result)
+})
+
+
 async function testNeo4jConnection() {
   const session = driver.session();
-  var title = 'Sebitas'
+  var title = 'Jaime'
   const year = 2013
 
   try {
     // Ejecuta una consulta simple para verificar la conexión
-    const result = await session.run('CREATE (n:Users {title:$titleParam}) RETURN n', {titleParam : title})
+    const result = await session.run('MATCH (a:Users {title:$titleParam}),(b:Users {title:$nombre}) MERGE(a)-[r:Friend_of]-(b) RETURN a,b', {titleParam : title, nombre:'Sebitas'})
     .then(function(result){
         result.records.forEach(function(record){
             console.log(record._fields[0].properties.title)
@@ -53,7 +102,7 @@ async function testNeo4jConnection() {
     session.close();
   }
 }
-
+/*
 testNeo4jConnection()
   .then(() => {
     // Cierra la conexión cuando hayas terminado
@@ -62,7 +111,7 @@ testNeo4jConnection()
   .catch(error => {
     console.error('Error al probar la conexión a Neo4j:', error);
   });
-
+*/
 
 
 
