@@ -22,6 +22,7 @@ mongoose.connect(uri, {
 })
 .then(db => console.log('Mongo is connected'))
 .catch(err => console.log(err))
+const binary = mongoose.Binary
 
 
 //Conexion con Neoj4
@@ -151,6 +152,8 @@ app.post("/register", function(req, res){
     var user = req.body.usernameR;
     var password = req.body.passR;
     var nombre = req.body.nombre_completo;
+    var fechaNacimiento = req.body.fecha_nacimiento
+    var file = req.files.profile_pic
     let usuario = {
       username : user,
       password : password,
@@ -160,7 +163,8 @@ app.post("/register", function(req, res){
       }
     }
     try {
-      ravenSession.store(usuario, 'Users/')
+      ravenSession.store(usuario, 'Users/'+user)
+      ravenSession.advanced.attachments.store('Users/'+user, 'nombre_archivo', file, 'image/jpeg')
       ravenSession.saveChanges();
     } catch (error) {
       console.log(error)
