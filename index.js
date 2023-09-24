@@ -141,6 +141,8 @@ app.post("/login", function(req, res) {
     
 })
 
+
+
 app.post("/register",upload.single('profile_pic'), async function(req, res){
     var user = req.body.usernameR;
     var password = req.body.passR;
@@ -152,6 +154,7 @@ app.post("/register",upload.single('profile_pic'), async function(req, res){
       username : user,
       password : password,
       nombre : nombre,
+      fechaNacimiento : fechaNacimiento,
       "@metadata": {
         "@collection": "Users"
       }
@@ -161,7 +164,7 @@ app.post("/register",upload.single('profile_pic'), async function(req, res){
       ravenSession.advanced.attachments.store('Users/'+user, file.originalname, file.buffer, file.mimetype)
       ravenSession.saveChanges();
       try {
-        const result = await neo4jSession.run('CREATE(n:Users {username:$userParam}) RETURN n', {userParam : user})
+        await neo4jSession.run('CREATE(n:Users {username:$userParam}) RETURN n', {userParam : user})
         .then(function(result){
             console.log('Usuario '+ result.username + ' agreagado con exito a neo4j')
         })
