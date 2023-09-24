@@ -1,4 +1,5 @@
 const mongoose = require("mongoose")
+const { integer } = require("neo4j-driver")
 const { Schema } = mongoose
 
 const courseSchema = new Schema ({
@@ -29,13 +30,12 @@ const courseSchema = new Schema ({
             questions:
             [
                 {
-                    options:
-                    [
-                        {
-                            option: String
-                        }
-                    ],
-                correct: String
+                    question: String,
+                    opcion1: String,
+                    opcion2: String,
+                    opcion3: String,
+                    opcion4: String,
+                    correct: Number
                 }
             ]
         }

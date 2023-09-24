@@ -3,7 +3,9 @@ const fs = require("fs")
 const app = express()
 const path = require("path")
 const port = 3000; // Cambia el puerto según tu preferencia
-
+const multer = require('multer')
+const storage = multer.memoryStorage()
+const upload = multer({ storage })
 
 
 
@@ -117,7 +119,7 @@ app.set('views', path.join(__dirname, 'views'))
 app.use(express.static(publicPath))
 
 app.get('/', (req, res) => {
-  res.render('index');
+  res.render('prueba');
 });
 
 app.post("/login", function(req, res) {
@@ -139,12 +141,13 @@ app.post("/login", function(req, res) {
     
 })
 
-app.post("/register", async function(req, res){
+app.post("/register",upload.single('profile_pic'), async function(req, res){
     var user = req.body.usernameR;
     var password = req.body.passR;
     var nombre = req.body.nombre_completo;
     var fechaNacimiento = req.body.fecha_nacimiento
-    let file = req.body.profile_pic
+    const file = req.file
+    console.log(file)
     let usuario = {
       username : user,
       password : password,
@@ -155,7 +158,7 @@ app.post("/register", async function(req, res){
     }
     try {
       ravenSession.store(usuario, 'Users/'+user)
-      ravenSession.advanced.attachments.store('Users/'+user, 'nombre_archivo', file, 'image/jpeg')
+      ravenSession.advanced.attachments.store('Users/'+user, file.originalname, file.buffer, file.mimetype)
       ravenSession.saveChanges();
       try {
         const result = await neo4jSession.run('CREATE(n:Users {username:$userParam}) RETURN n', {userParam : user})
@@ -176,6 +179,25 @@ app.post("/register", async function(req, res){
     
     
 })
+/*
+app.post("/", async function(req, res){
+  const Users = await session.load("Users")
+  const file = await session.advanced.attachments.get(Users, "")
+
+})
+*/
+
+
+
+app.post('/subir-archivo', upload.single('archivo'), (req, res) => {
+  const archivo = req.file
+  console.log(archivo)
+  fs.writeFileSync('public/imagen.jpg', archivo.buffer)
+  res.send('<h1>Mostrar Imagen</h1><img src=/imagen.jpg alt="Imagen" />');
+})
+
+
+
 
 app.post("/createCourse", async function(req, res){
     var cursoId = req.body.curso_id
@@ -200,12 +222,82 @@ app.post("/createCourse", async function(req, res){
 
 app.post("/findCourse", async function(req, res){
   try{
-    const check = await collection.find({})
-    res.render('', {course : check}) // aqui se agrega el html donde se muestran los cursos
+    const course = await collection.findOne({id : 'Nombre_del_curso'})
+    res.render('', {course : course}) // aqui se agrega el html donde se muestran los cursos
   }catch(error){
     console.log(error)
   }
 })
+
+app.post("/addEvaluation", async function(req, res){
+  try{
+    const filter = {id: 'IC4023'}
+    console.log(course)
+    var cod = req.body.evaluacion_cod
+    var start = req.body.evaluacion_start
+    var end = req.body.evaluacion_end 
+    await collection.updateOne(filter, 
+      {$push: {
+        evaluations : {
+          code : cod,
+          start : start,
+          end : end
+        },
+      },
+    })
+
+  }catch(error){
+    console.log(error)
+  }
+})
+
+app.post("/enroll", async function(req, res){
+  try{
+    var user = "jaime"  // el usuario debe venir por parametro de alguna manera
+    var curso = "IC4023"   // el codigo debe venir por parametro
+    const result = await collection.updateOne(
+      {id : curso},
+      {$push : {
+        students: {
+          user: user
+        }
+      }} 
+    )
+  }catch(error){
+    console.log(error)
+  }
+})
+
+app.post("/addQuestion", async function(req, res){
+  try{
+    var question = req.body.question
+    var opcion1 = req.body.opcion1
+    var opcion2 = req.body.opcion2
+    var opcion3 = req.body.opcion3
+    var opcion4 = req.body.opcion4
+    var correcta = req.body.correcta
+    const data = {
+      question: question,
+      opcion1: opcion1,
+      opcion2: opcion2,
+      opcion3: opcion3,
+      opcion4: opcion4,
+      correct: correcta
+    }
+    const result = await collection.updateOne(
+      {id: 'IC4023', "evaluations.code": 'Evaluacion 2'},    //AQUI DEBE IR EL NOMBRE DE LA EVALUACION Y EL CODIGO DEL CURSO
+      {$push: {"evaluations.$.questions": data}}  
+    )
+    if (result.matchedCount === 0){
+      console.log('No')
+    } else{
+      console.log('Si')
+    }
+  } catch(error){
+    console.log(error)
+  }
+})
+
 
 // Configura middleware para procesar solicitudes JSON
 app.use(express.json());

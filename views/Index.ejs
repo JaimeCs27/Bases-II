@@ -15,7 +15,7 @@
     <div class="wrapper">
         <div class="form-box login">
             <h2>Login</h2>
-            <form action="/login" name="loginForm" method="post">
+            <form action="/login" name="loginForm" method="post" enctype="multipart/form-data">
             <div class="input-box">
                 <i class='bx bxs-user'></i>
                 <input type="username" name="username" required>
@@ -34,7 +34,7 @@
         </div>
         <div class="form-box register">
             <h2>Registro</h2>
-            <form action="/register" name="registerForm" method="post">
+            <form action="/register" name="registerForm" method="post" enctype="multipart/form-data">
             <div class="input-box">
                 <i class='bx bxs-user'></i>
                 <input type="username" name="usernameR"required>
