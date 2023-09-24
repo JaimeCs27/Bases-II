@@ -1,4 +1,5 @@
 const express = require("express")
+const fs = require("fs")
 const app = express()
 const path = require("path")
 const port = 3000; // Cambia el puerto según tu preferencia
@@ -7,7 +8,7 @@ const port = 3000; // Cambia el puerto según tu preferencia
 
 
 //Conexion con Raven
-const { DocumentStore } = require('ravendb');
+const { DocumentStore, GetServerWideExternalReplicationOperation } = require('ravendb');
 const ravenConection = new DocumentStore('http://127.0.0.1:8080', 'TecVegetal');
 ravenConection.initialize();
 const ravenSession = ravenConection.openSession();
@@ -22,7 +23,7 @@ mongoose.connect(uri, {
 })
 .then(db => console.log('Mongo is connected'))
 .catch(err => console.log(err))
-const binary = mongoose.Binary
+const collection = require("./src/mongodb.js")
 
 
 //Conexion con Neoj4
@@ -67,17 +68,11 @@ var server = OrientDB({
 
 // Use OrientDB server to connect to a specific database
 var dbOrient = server.use({
-   name: 'prueba',
+   name: 'demodb',
    username: 'root',
    password: '20040309',
    useToken : true
 });
-
-dbOrient.query("select * from Person")
-.then((result) =>{
-  console.log(result)
-})
-
 
 async function testNeo4jConnection() {
   const session = driver.session();
@@ -114,16 +109,6 @@ testNeo4jConnection()
   });
 */
 
-
-
-
-//Conexion con OrientDB
-const Orient = require("orientjs").OrientDBClient;
-const orientSession = Orient.connect({
-    host: "127.0.0.1",
-    port: 2424
-})
-
 app.use(express.urlencoded({extended:false}))
 const publicPath = path.join(__dirname, 'public')
 console.log(publicPath);
@@ -140,20 +125,26 @@ app.post("/login", function(req, res) {
     var password = req.body.password;
     try{
       ravenSession.query({collection : "Users"}).whereEquals('username', user).all().then(result =>{
-        if(result[0].password == password)
-          res.render('mainPage')
+        result.forEach(function(result){
+          if(result.password == password)
+            res.render('mainPage')
+          else
+            console.log('No se pudo acceder')
+        })
+        
       })
     }catch(error){
       console.log(error)
     }
+    
 })
 
-app.post("/register", function(req, res){
+app.post("/register", async function(req, res){
     var user = req.body.usernameR;
     var password = req.body.passR;
     var nombre = req.body.nombre_completo;
     var fechaNacimiento = req.body.fecha_nacimiento
-    var file = req.files.profile_pic
+    let file = req.body.profile_pic
     let usuario = {
       username : user,
       password : password,
@@ -166,11 +157,54 @@ app.post("/register", function(req, res){
       ravenSession.store(usuario, 'Users/'+user)
       ravenSession.advanced.attachments.store('Users/'+user, 'nombre_archivo', file, 'image/jpeg')
       ravenSession.saveChanges();
+      try {
+        const result = await neo4jSession.run('CREATE(n:Users {username:$userParam}) RETURN n', {userParam : user})
+        .then(function(result){
+            console.log('Usuario '+ result.username + ' agreagado con exito a neo4j')
+        })
+        .catch(function(error){
+            console.log(error);
+        });
+    
+      } catch (error) {
+        console.error('Error al conectar a Neo4j:', error);
+      }
     } catch (error) {
-      console.log(error)
+      console.log('No se logro agregar el usuario a raven'+error)
     }
     ravenSession.dispose();
     
+    
+})
+
+app.post("/createCourse", async function(req, res){
+    var cursoId = req.body.curso_id
+    var nombre = req.body.curso_name
+    var description = req.body.curso_desc
+    var start = req.body.curso_start
+    var end = req.body.curso_end
+    const data = {
+      id: cursoId,
+      name: nombre,
+      description: description,
+      start: start,
+      end: end
+    }
+    try{
+      await collection.insertMany([data])
+    }catch(error){
+      console.log(error)
+    } 
+})
+
+
+app.post("/findCourse", async function(req, res){
+  try{
+    const check = await collection.find({})
+    res.render('', {course : check}) // aqui se agrega el html donde se muestran los cursos
+  }catch(error){
+    console.log(error)
+  }
 })
 
 // Configura middleware para procesar solicitudes JSON
