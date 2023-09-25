@@ -116,3 +116,7 @@ header{
     margin-right: 20px;
     align-content: left;
 }
+.input-box input:focus~label,
+.input-box input:valid~label{
+    top: -5px;
+}
