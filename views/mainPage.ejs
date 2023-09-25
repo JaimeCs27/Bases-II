@@ -13,10 +13,48 @@
     <header>
         <h2 class="logo"><img src="css/Imagenes/Logo Tec.png"></h2>
         <nav class="navigation">
-            <a href="#">Mi Perfil</a>
-            <a href="#">Mis Cursos</a>
-            <a href="#">Mis Contactos</a>
+            <a href="/setMainPage">Mi Perfil</a>
+            <a href="/setCurso">Cursos creados</a>
+            <a href="/setEnrollment">Cursos matriculados</a>
+            <a href="#">Cursos publicados</a>
+            <a href="#">Contactos</a>
+            <a href="#">Mensajes</a>
         </nav>
+
+        <div class="form-box register">
+            <form action="/update" name="registerForm" method="post">
+            <div class="info">
+                <h3>Información Personal</h3>
+            </div>
+            <div class="input-pic">
+                <input type="file" accept="image/jpg, image/jpeg, image/png" required>
+                <label>Foto perfil</label>
+            </div>
+            <div class="input-box">
+                <i class='bx bxs-user'></i>
+                <input type="Usuario" name="usuarioR"required>
+                <label>Usuario</label>
+            </div>
+            <div class="input-box">
+                <i class='bx bxs-user'></i>
+                <input type="contraseña" name="contraseñaR"required>
+                <label>Contraseña</label>
+            </div>
+            <div class="input-box">
+                <i class='bx bxs-user'></i>
+                <input type="text" name="nombre_completo"required>
+                <label>Nombre Completo</label>
+            </div>
+            <div class="input-date">
+                <input type="date" required>
+                <label>Fecha Nacimiento</label>
+            </div>
+            <button type="submit" class="btn">Actualizar</button>
+            
+            </form>
+        </div>
     </header>
+
+    
 </body>
 </html>

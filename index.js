@@ -6,6 +6,7 @@ const port = 3000; // Cambia el puerto según tu preferencia
 const multer = require('multer')
 const storage = multer.memoryStorage()
 const upload = multer({ storage })
+const bodyParser = require('body-parser')
 
 
 
@@ -119,17 +120,51 @@ app.set('views', path.join(__dirname, 'views'))
 app.use(express.static(publicPath))
 
 app.get('/', (req, res) => {
-  res.render('prueba');
+  res.render('Index.ejs');
 });
 
+app.get("/setCurso", function(req, res){
+  res.render('cursosCreados')
+})
+
+app.get("/setMainPage", function(req, res){
+  res.render('mainPage')
+})
+
+app.get("/setEnrollment", async function(req, res){
+  try{
+    const courses = await collection.find({})
+    console.log(courses)
+    res.render('cursosMatriculados', {courses : courses}) // aqui se agrega el html donde se muestran los cursos
+  }catch(error){
+    console.log(error)
+  }
+})
+
+app.post("/findCourse", async function(req, res){
+  try{
+    const courses = await collection.find({})
+    console.log(courses)
+    res.render('cursosMatriculados', {course : courses}) // aqui se agrega el html donde se muestran los cursos
+  }catch(error){
+    console.log(error)
+  }
+})
+
+
+
+app.post("/createCourse", function(req, res){
+  res.render("crearCurso")
+})
+
 app.post("/login", function(req, res) {
-    var user = req.body.username;
-    var password = req.body.password;
+    const user = req.body.username;
+    const password = req.body.password;
     try{
-      ravenSession.query({collection : "Users"}).whereEquals('username', user).all().then(result =>{
+      ravenSession.query({collection : "Users"}).whereEquals("username", user).all().then(result =>{
         result.forEach(function(result){
           if(result.password == password)
-            res.render('mainPage')
+            res.render('mainPage.ejs')
           else
             console.log('No se pudo acceder')
         })
@@ -140,8 +175,6 @@ app.post("/login", function(req, res) {
     }
     
 })
-
-
 
 app.post("/register",upload.single('profile_pic'), async function(req, res){
     var user = req.body.usernameR;
@@ -154,7 +187,7 @@ app.post("/register",upload.single('profile_pic'), async function(req, res){
       username : user,
       password : password,
       nombre : nombre,
-      fechaNacimiento : fechaNacimiento,
+      fechaNacimiento: fechaNacimiento,
       "@metadata": {
         "@collection": "Users"
       }
@@ -164,7 +197,7 @@ app.post("/register",upload.single('profile_pic'), async function(req, res){
       ravenSession.advanced.attachments.store('Users/'+user, file.originalname, file.buffer, file.mimetype)
       ravenSession.saveChanges();
       try {
-        await neo4jSession.run('CREATE(n:Users {username:$userParam}) RETURN n', {userParam : user})
+        const result = await neo4jSession.run('CREATE(n:Users {username:$userParam}) RETURN n', {userParam : user})
         .then(function(result){
             console.log('Usuario '+ result.username + ' agreagado con exito a neo4j')
         })
@@ -223,14 +256,7 @@ app.post("/createCourse", async function(req, res){
 })
 
 
-app.post("/findCourse", async function(req, res){
-  try{
-    const course = await collection.findOne({id : 'Nombre_del_curso'})
-    res.render('', {course : course}) // aqui se agrega el html donde se muestran los cursos
-  }catch(error){
-    console.log(error)
-  }
-})
+
 
 app.post("/addEvaluation", async function(req, res){
   try{
@@ -269,6 +295,30 @@ app.post("/enroll", async function(req, res){
   }catch(error){
     console.log(error)
   }
+})
+
+app.post("/editUser", async function(req, res){
+    var user = req.body.user   // EL USUARIO DEBE VENIR POR PARAMETRO
+    var password = req.body.passR;
+    var nombre = req.body.nombre_completo;
+    var fechaNacimiento = req.body.fecha_nacimiento
+    const file = req.file
+    console.log(file)
+    try {
+      const userInfo = ravenSession.query({collection: 'Users'}).whereEquals("username", user).all()
+      userInfo.password = password
+      userInfo.nombre = nombre
+      userInfo.fechaNacimiento = fechaNacimiento
+      const oldFile = userInfo.advanced.attachments.getNames("Users/"+user)
+      if(file != null){
+        userInfo.advanced.attachments.delete("Users/"+user, oldFile.name)
+        userInfo.advanced.attachments.store('Users/'+user, file.originalname, file.buffer, file.mimetype)
+      }
+      ravenSession.saveChanges();
+    } catch (error) {
+      console.log('No se logro agregar el usuario a raven'+error)
+    }
+    ravenSession.dispose();
 })
 
 app.post("/addQuestion", async function(req, res){
