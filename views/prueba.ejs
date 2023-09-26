@@ -10,10 +10,18 @@
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 </head>
 <body>
-    <form action="/enroll" method="post">
-    <button type="submit">
-        tocame
-    </button>
-    </form>
+    <input type="text" id="search-box" onkeyup="sendData(this)">
+    <section id="searchResults">
+        
+    </section>
+    <script>
+        function sendData(e){
+            fetch('getCourses', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({payload: e.value})
+            });
+        }
+    </script>
 </body>
 </html>

@@ -7,7 +7,7 @@ const multer = require('multer')
 const storage = multer.memoryStorage()
 const upload = multer({ storage })
 const bodyParser = require('body-parser')
-
+const router = express.Router()
 
 
 //Conexion con Raven
@@ -112,30 +112,74 @@ testNeo4jConnection()
   });
 */
 
-app.use(express.urlencoded({extended:false}))
+app.use(express.urlencoded({extended:true}))
 const publicPath = path.join(__dirname, 'public')
 console.log(publicPath);
 app.set('view engine', 'ejs')
 app.set('views', path.join(__dirname, 'views'))
 app.use(express.static(publicPath))
+app.use(bodyParser.json());
 
 app.get('/', (req, res) => {
-  res.render('Index.ejs');
+  res.render('index.ejs');
 });
 
-app.get("/setCurso", function(req, res){
-  res.render('cursosCreados')
+app.get("/setCurso", async function(req, res){
+  try{
+    const courses = await collection.find({})
+    const user = 'usuario'
+    const userInfos = await ravenSession.load('Users/'+user)
+    console.log("setCurso: " + userInfos)
+    const creados = userInfos.cursosCreados
+    console.log(creados)
+    var arr = []
+    courses.forEach(function(course){
+        creados.forEach(function(myCourses){
+          console.log('Curso ID: ' + course.id)
+          console.log('Mi curso id: ' + myCourses.codigo)
+          if(course.id == myCourses.codigo)
+            arr.push(course)
+        })
+    })
+    console.log(arr)
+    res.render('cursosCreados', {courses : arr}) // aqui se agrega el html donde se muestran los cursos
+  }catch(error){
+    console.log(error)
+  }
 })
 
 app.get("/setMainPage", function(req, res){
   res.render('mainPage')
 })
 
+app.post('/goToCreateCourse', function(req, res){
+  res.render('crearCurso')
+})
+
+app.get("/setFindCourses", async function(req, res){
+  try{
+    const courses = await collection.find({})
+    res.render('cursosPublicados', {courses : courses, payload : courses}) // aqui se agrega el html donde se muestran los cursos
+  }catch(error){
+    console.log(error)
+  }
+})
+
 app.get("/setEnrollment", async function(req, res){
   try{
     const courses = await collection.find({})
-    console.log(courses)
-    res.render('cursosMatriculados', {courses : courses}) // aqui se agrega el html donde se muestran los cursos
+    const user = 'nuevo'
+    const userInfos = await ravenSession.load('Users/'+user)
+    const matriculados = userInfos.cursosMatriculados
+    var arr = []
+    courses.forEach(function(course){
+        matriculados.forEach(function(myCourses){
+          if(course.id == myCourses.codigo)
+            arr.push(course)
+        })
+    })
+    console.log(arr)
+    res.render('cursosMatriculados', {courses : arr}) // aqui se agrega el html donde se muestran los cursos
   }catch(error){
     console.log(error)
   }
@@ -151,20 +195,15 @@ app.post("/findCourse", async function(req, res){
   }
 })
 
-
-
-app.post("/createCourse", function(req, res){
-  res.render("crearCurso")
-})
-
 app.post("/login", function(req, res) {
     const user = req.body.username;
     const password = req.body.password;
     try{
       ravenSession.query({collection : "Users"}).whereEquals("username", user).all().then(result =>{
         result.forEach(function(result){
-          if(result.password == password)
-            res.render('mainPage.ejs')
+          if(result.password == password){
+            res.render('mainPage')       
+          }
           else
             console.log('No se pudo acceder')
         })
@@ -176,18 +215,37 @@ app.post("/login", function(req, res) {
     
 })
 
+app.post('/getCourses', async (req,res)=> {
+  let payload = req.body.payload.trim();
+  try{
+    console.log('Nueva Busqueda')
+    const courses = await collection.find({name:{$regex: new RegExp('^'+payload+'.*','i')}}).exec();
+    res.send({payload: courses}) // aqui se agrega el html donde se muestran los cursos
+  }catch(error){
+    console.log(error)
+  }
+})
+
+app.post('/cursoDetalles', async (req,res)=> {
+  //res.render('mainPage')
+})
+
+
+
 app.post("/register",upload.single('profile_pic'), async function(req, res){
     var user = req.body.usernameR;
     var password = req.body.passR;
     var nombre = req.body.nombre_completo;
     var fechaNacimiento = req.body.fecha_nacimiento
     const file = req.file
-    console.log(file)
+    const matriculados = []
     let usuario = {
       username : user,
       password : password,
       nombre : nombre,
       fechaNacimiento: fechaNacimiento,
+      cursosMatriculados: matriculados,
+      cursosCreados: matriculados,
       "@metadata": {
         "@collection": "Users"
       }
@@ -235,7 +293,8 @@ app.post('/subir-archivo', upload.single('archivo'), (req, res) => {
 
 
 
-app.post("/createCourse", async function(req, res){
+app.post("/createCourse", async function(req, res){  // SE OCUPA EL USUARIO DE LA PAGINA
+    var user = 'usuario'
     var cursoId = req.body.curso_id
     var nombre = req.body.curso_name
     var description = req.body.curso_desc
@@ -250,6 +309,9 @@ app.post("/createCourse", async function(req, res){
     }
     try{
       await collection.insertMany([data])
+      const userInfo = await ravenSession.query({collection: 'Users'}).whereEquals("username", user).all()
+      userInfo[0].cursosCreados.push({"codigo": cursoId})
+      ravenSession.saveChanges()
     }catch(error){
       console.log(error)
     } 

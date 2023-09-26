@@ -15,42 +15,42 @@
         <nav class="navigation">
             <a href="/setMainPage">Mi Perfil</a>
             <a href="/setCurso">Cursos creados</a>
-            <a href="#">Cursos matriculados</a>
-            <a href="#">Cursos publicados</a>
+            <a href="/setEnrollment">Cursos matriculados</a>
+            <a href="/setFindCourses">Cursos publicados</a>
             <a href="#">Contactos</a>
             <a href="#">Mensajes</a>
         </nav>
 
         <div class="form-box curso">
-            <form action="/crearCurso" name="CursoForm" method="post">
+            <form action="/createCourse" name="CursoForm" method="post">
             <div class="info">
                 <h3>Crear curso</h3>
             </div>
             <div class="input-pic">
-                <input type="file" accept="image/jpg, image/jpeg, image/png" required>
+                <input type="file" accept="image/jpg, image/jpeg, image/png" name="file" enctype="multipart/form-data" required>
                 <label>Foto del curso</label>
             </div>
             <div class="input-box">
                 <i class='bx bxs-user'></i>
-                <input type="text" name="codigo"required>
+                <input type="text" name="curso_id"required>
                 <label>Código</label>
             </div>
             <div class="input-box">
                 <i class='bx bxs-user'></i>
-                <input type="text" name="nombreCurso"required>
+                <input type="text" name="curso_name"required>
                 <label>Nombre del curso</label>
             </div>
             <div class="input-box">
                 <i class='bx bxs-user'></i>
-                <input type="text" name="descripcion"required>
+                <input type="text" name="curso_desc"required>
                 <label>Descripción</label>
             </div>
             <div class="input-date">
-                <input type="date" required>
+                <input type="date" name="curso_start"required>
                 <label>Fecha de inicio</label>
             </div>
             <div class="input-date">
-                <input type="date" required>
+                <input type="date" name="curso_end" required>
                 <label>Fecha de finalización</label>
             </div>
             <button type="submit" class="btn">Crear curso</button>
