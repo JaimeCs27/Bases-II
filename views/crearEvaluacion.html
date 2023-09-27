@@ -21,6 +21,21 @@
             <a href="#">Mensajes</a>
         </nav>
     </header>
+    <div class="headerEv">
+        <div class="input-box">
+            <input type="text" name="nombreEvaluacion"required>
+            <label>Nombre de la evaluación</label>
+        </div>
+    </div>
+    <div class="input-date">
+        <input type="date" required>
+        <label>Fecha de inicio</label>
+    </div>
+    <div class="input-date">
+        <input type="date" required>
+        <label>Fecha de finalización</label><br />
+    </div>
+
     <div class="formEvaluacion">
         <div class="evaluacion">
             <div class="pregunta">
@@ -33,7 +48,9 @@
             <input type="radio" name="preg1" value="1" /> <input type="text" name="respuesta1"required><input type="checkbox" id="cbox3" value="checkbox" /><br />
             </div>
         </div>
-        
+        <div class="button">
+            <button type="submit" class="btn">Agregar otra pregunta</button>
+        </div>
         <div class="button">
             <button type="submit" class="btn">Crear evaluacion</button>
         </div>
