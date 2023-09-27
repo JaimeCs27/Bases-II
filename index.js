@@ -34,31 +34,6 @@ const neo4j = require('neo4j-driver')
 const driver = neo4j.driver('bolt://127.0.0.1', neo4j.auth.basic('si', '12345678'));
 const neo4jSession = driver.session() 
 
-/*
-//Conexion con Orient
-const orient = require('orientjs').OrientDBClient
-const orientConection = orient.connect({
-    host: "localhost",
-    port: 2424
-}).then(client =>{
-  client.session({ name: "demoDB", username: "root", password: "20040309" })
-  .then(session => {
-    // use the session
-    session.query('select from Persona where name := jaime')
-    .all()
-    .then((results)=>{
-      console.log(results)
-    })
-    // close the session
-    return session.close();
-  });
-}).then(() => {
-  console.log('client closed')
-}).catch(error => {
-  console.log(error)
-})
-*/
-// Create OrientDB server connection
 var OrientDB = require('orientjs');
 
 var server = OrientDB({
