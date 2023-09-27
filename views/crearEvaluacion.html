@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang ="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE-edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> TecVegetal </title>
+    <link rel="stylesheet" href="css/persona.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+</head> 
+
+<body>
+    <header>
+        <h2 class="logo"><img src="css/Imagenes/Logo Tec.png"></h2>
+        <nav class="navigation">
+            <a href="#">Mi Perfil</a>
+            <a href="#">Cursos creados</a>
+            <a href="#">Cursos matriculados</a>
+            <a href="#">Cursos publicados</a>
+            <a href="#">Contactos</a>
+            <a href="#">Mensajes</a>
+        </nav>
+    </header>
+    <div class="formEvaluacion">
+        <div class="evaluacion">
+            <div class="pregunta">
+                <input type="text" name="pregunta"required>
+                <label>Escriba la pregunta</label>
+            </div>
+            <div class="respuestas">
+            <input type="radio" name="preg1" value="1" /> <input type="text" name="respuesta1"required><input type="checkbox" id="cbox1" value="checkbox" /><br />
+            <input type="radio" name="preg1" value="1" /> <input type="text" name="respuesta1"required><input type="checkbox" id="cbox2" value="checkbox" /><br />
+            <input type="radio" name="preg1" value="1" /> <input type="text" name="respuesta1"required><input type="checkbox" id="cbox3" value="checkbox" /><br />
+            </div>
+        </div>
+        
+        <div class="button">
+            <button type="submit" class="btn">Crear evaluacion</button>
+        </div>
+    </div>
+
+</body>
+</html>
