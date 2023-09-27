@@ -3,7 +3,6 @@ const loginLink = document.querySelector('.login-link');
 const registerLink = document.querySelector('.register-link');
 const btn = document.querySelector('.btn');
 
-
 registerLink.addEventListener('click', ()=> {
     wrapper.classList.add('active');
 })
@@ -11,6 +10,5 @@ registerLink.addEventListener('click', ()=> {
 loginLink.addEventListener('click', ()=> {
     wrapper.classList.remove('active');
 })
-
 
 

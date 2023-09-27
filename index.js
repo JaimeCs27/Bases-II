@@ -8,6 +8,7 @@ const storage = multer.memoryStorage()
 const upload = multer({ storage })
 const bodyParser = require('body-parser')
 const router = express.Router()
+const userLoging = []
 
 
 //Conexion con Raven
@@ -102,20 +103,21 @@ app.get('/', (req, res) => {
 app.get("/setCurso", async function(req, res){
   try{
     const courses = await collection.find({})
-    const user = 'usuario'
+    const user = userLoging[0]
     const userInfos = await ravenSession.load('Users/'+user)
     console.log("setCurso: " + userInfos)
     const creados = userInfos.cursosCreados
     console.log(creados)
     var arr = []
-    courses.forEach(function(course){
-        creados.forEach(function(myCourses){
-          console.log('Curso ID: ' + course.id)
-          console.log('Mi curso id: ' + myCourses.codigo)
-          if(course.id == myCourses.codigo)
-            arr.push(course)
-        })
-    })
+    if(creados)
+      courses.forEach(function(course){
+          creados.forEach(function(myCourses){
+            console.log('Curso ID: ' + course.id)
+            console.log('Mi curso id: ' + myCourses.codigo)
+            if(course.id == myCourses.codigo)
+              arr.push(course)
+          })
+      })
     console.log(arr)
     res.render('cursosCreados', {courses : arr}) // aqui se agrega el html donde se muestran los cursos
   }catch(error){
@@ -143,7 +145,7 @@ app.get("/setFindCourses", async function(req, res){
 app.get("/setEnrollment", async function(req, res){
   try{
     const courses = await collection.find({})
-    const user = 'nuevo'
+    const user = userLoging[0]
     const userInfos = await ravenSession.load('Users/'+user)
     const matriculados = userInfos.cursosMatriculados
     var arr = []
@@ -177,7 +179,9 @@ app.post("/login", function(req, res) {
       ravenSession.query({collection : "Users"}).whereEquals("username", user).all().then(result =>{
         result.forEach(function(result){
           if(result.password == password){
-            res.render('mainPage')       
+            userLoging.push(user)
+            //res.redirect('/login/${user}')
+            res.render('mainPage')
           }
           else
             console.log('No se pudo acceder')
@@ -189,6 +193,14 @@ app.post("/login", function(req, res) {
     }
     
 })
+
+app.get("/login/:username", (req,res) => {
+  const {username} = req.params
+  res.render(path.join(__dirname, 'views/mainPage.ejs'), {username: username})
+})
+
+
+
 
 app.post('/getCourses', async (req,res)=> {
   let payload = req.body.payload.trim();
@@ -220,7 +232,7 @@ app.post("/register",upload.single('profile_pic'), async function(req, res){
       nombre : nombre,
       fechaNacimiento: fechaNacimiento,
       cursosMatriculados: matriculados,
-      cursosCreados: matriculados,
+      cursosCreados: [],
       "@metadata": {
         "@collection": "Users"
       }
@@ -269,7 +281,7 @@ app.post('/subir-archivo', upload.single('archivo'), (req, res) => {
 
 
 app.post("/createCourse", async function(req, res){  // SE OCUPA EL USUARIO DE LA PAGINA
-    var user = 'usuario'
+    var user = userLoging[0]
     var cursoId = req.body.curso_id
     var nombre = req.body.curso_name
     var description = req.body.curso_desc
@@ -285,6 +297,7 @@ app.post("/createCourse", async function(req, res){  // SE OCUPA EL USUARIO DE L
     try{
       await collection.insertMany([data])
       const userInfo = await ravenSession.query({collection: 'Users'}).whereEquals("username", user).all()
+      console.log(userInfo[0])
       userInfo[0].cursosCreados.push({"codigo": cursoId})
       ravenSession.saveChanges()
     }catch(error){
@@ -319,7 +332,7 @@ app.post("/addEvaluation", async function(req, res){
 
 app.post("/enroll", async function(req, res){
   try{
-    var user = "jaime"  // el usuario debe venir por parametro de alguna manera
+    var user = userLoging[0]  // el usuario debe venir por parametro de alguna manera
     var curso = "IC4023"   // el codigo debe venir por parametro
     const result = await collection.updateOne(
       {id : curso},
@@ -335,7 +348,7 @@ app.post("/enroll", async function(req, res){
 })
 
 app.post("/editUser", async function(req, res){
-    var user = req.body.user   // EL USUARIO DEBE VENIR POR PARAMETRO
+    var user = userLoging[0]   // EL USUARIO DEBE VENIR POR PARAMETRO
     var password = req.body.passR;
     var nombre = req.body.nombre_completo;
     var fechaNacimiento = req.body.fecha_nacimiento
