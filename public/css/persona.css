@@ -8,7 +8,7 @@
 }
 
 body {
-    display: flex;
+    display: inline-block;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
@@ -156,7 +156,7 @@ header{
 
 .button{
     justify-content: center;
-
+    margin-top: 20px;
 }
 
 .pregunta {
@@ -197,4 +197,79 @@ header{
 
 .formEvaluacion{
     display: inline-block;
+}
+
+.headerEv {
+    margin-top:100px
+}
+
+.input-box input:focus~label,
+.input-box input:valid~label{
+    top: -5px;
+}
+
+.input-box input{
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-size: 1em;
+    color: #fff;
+    font-weight: 600;
+    padding: 0 35px 0 5px;
+}
+
+.input-box {
+    position: relative;
+    width: 100%;
+    height: 50px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 40px;
+    margin: 30px 0;
+}
+
+.input-date {
+    position: relative;
+    width: 100%;
+    height: 50px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 40px;
+    margin: 30px 0;
+}
+
+.input-box label{
+    position: absolute;
+    top: 50%;
+    left: 10px;
+    transform: translateY(-50%);
+    font-size: 1em;
+    color:#fff;
+    font-weight: 500;
+    pointer-events: none;
+    transition: .5s;
+}
+
+.input-date label{
+    position: absolute;
+    top: -5%;
+    left: 10px;
+    transform: translateY(-50%);
+    font-size: 1em;
+    color:#fff;
+    font-weight: 500;
+    pointer-events: none;
+    transition: .5s;
+}
+
+.input-date input{
+    position: absolute;
+    top: 50%;
+    left: 10px;
+    transform: translateY(-50%);
+    font-size: 1em;
+    background: transparent;
+    border: none;
+    color:#fff;
+    font-weight: 500;
 }
