@@ -26,6 +26,11 @@ header{
     z-index: 99;
 }
 
+.labelError {
+    margin: 10px;
+    color: #fff;
+}
+
 .navigation a{
     position: relative;
     left: 250px;

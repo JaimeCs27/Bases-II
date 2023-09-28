@@ -12,7 +12,7 @@ const userLoging = []
 
 
 //Conexion con Raven
-const { DocumentStore, GetServerWideExternalReplicationOperation } = require('ravendb');
+const { DocumentStore, GetServerWideExternalReplicationOperation, DocumentInfo } = require('ravendb');
 const ravenConection = new DocumentStore('http://127.0.0.1:8080', 'TecVegetal');
 ravenConection.initialize();
 const ravenSession = ravenConection.openSession();
@@ -36,6 +36,7 @@ const driver = neo4j.driver('bolt://127.0.0.1', neo4j.auth.basic('si', '12345678
 const neo4jSession = driver.session() 
 
 var OrientDB = require('orientjs');
+const async = require("hbs/lib/async.js");
 
 var server = OrientDB({
   host:     'localhost',
@@ -95,10 +96,21 @@ app.set('view engine', 'ejs')
 app.set('views', path.join(__dirname, 'views'))
 app.use(express.static(publicPath))
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended:true}));
 
 app.get('/', (req, res) => {
   res.render('index.ejs');
 });
+
+app.post("/cursoDetallesPublicados", async function(req, res){
+  const course = await collection.find({id : req.body.input})
+  res.render('cursoPublicadoDetalles', {course : course[0]})
+})
+
+// app.get("/cursoDetalles", async function(req, res){
+//   console.log('parametros')
+//   console.log(req.params)
+// })
 
 app.get("/setCurso", async function(req, res){
   try{
@@ -107,7 +119,6 @@ app.get("/setCurso", async function(req, res){
     const userInfos = await ravenSession.load('Users/'+user)
     console.log("setCurso: " + userInfos)
     const creados = userInfos.cursosCreados
-    console.log(creados)
     var arr = []
     if(creados)
       courses.forEach(function(course){
@@ -155,7 +166,6 @@ app.get("/setEnrollment", async function(req, res){
             arr.push(course)
         })
     })
-    console.log(arr)
     res.render('cursosMatriculados', {courses : arr}) // aqui se agrega el html donde se muestran los cursos
   }catch(error){
     console.log(error)
@@ -165,7 +175,6 @@ app.get("/setEnrollment", async function(req, res){
 app.post("/findCourse", async function(req, res){
   try{
     const courses = await collection.find({})
-    console.log(courses)
     res.render('cursosMatriculados', {course : courses}) // aqui se agrega el html donde se muestran los cursos
   }catch(error){
     console.log(error)
@@ -205,16 +214,11 @@ app.get("/login/:username", (req,res) => {
 app.post('/getCourses', async (req,res)=> {
   let payload = req.body.payload.trim();
   try{
-    console.log('Nueva Busqueda')
     const courses = await collection.find({name:{$regex: new RegExp('^'+payload+'.*','i')}}).exec();
     res.send({payload: courses}) // aqui se agrega el html donde se muestran los cursos
   }catch(error){
     console.log(error)
   }
-})
-
-app.post('/cursoDetalles', async (req,res)=> {
-  //res.render('mainPage')
 })
 
 
@@ -297,7 +301,6 @@ app.post("/createCourse", async function(req, res){  // SE OCUPA EL USUARIO DE L
     try{
       await collection.insertMany([data])
       const userInfo = await ravenSession.query({collection: 'Users'}).whereEquals("username", user).all()
-      console.log(userInfo[0])
       userInfo[0].cursosCreados.push({"codigo": cursoId})
       ravenSession.saveChanges()
     }catch(error){
@@ -311,7 +314,6 @@ app.post("/createCourse", async function(req, res){  // SE OCUPA EL USUARIO DE L
 app.post("/addEvaluation", async function(req, res){
   try{
     const filter = {id: 'IC4023'}
-    console.log(course)
     var cod = req.body.evaluacion_cod
     var start = req.body.evaluacion_start
     var end = req.body.evaluacion_end 
@@ -333,15 +335,41 @@ app.post("/addEvaluation", async function(req, res){
 app.post("/enroll", async function(req, res){
   try{
     var user = userLoging[0]  // el usuario debe venir por parametro de alguna manera
-    var curso = "IC4023"   // el codigo debe venir por parametro
-    const result = await collection.updateOne(
-      {id : curso},
-      {$push : {
-        students: {
-          user: user
-        }
-      }} 
-    )
+    var idCurso = req.body.codigo   // el codigo debe venir por parametro
+    console.log(idCurso)
+    const curso = await collection.find({id : idCurso})
+    const students = curso[0].students
+    console.log(students)
+    if(students.length == 0){
+      const result = await collection.updateOne(
+        {id : idCurso},
+        {$push : {
+          students: {
+            user: user
+          }
+        }} 
+      )
+      const userInfo = await ravenSession.query({collection: 'Users'}).whereEquals("username", user).all()
+      userInfo[0].cursosMatriculados.push({"codigo": curso})
+      ravenSession.saveChanges()
+      return;
+    }
+    students.forEach(async function(student){
+      if(student.user != user){
+        const result = await collection.updateOne(
+          {id : idCurso},
+          {$push : {
+            students: {
+              user: user
+            }
+          }} 
+        )
+        const userInfo = await ravenSession.query({collection: 'Users'}).whereEquals("username", user).all()
+        userInfo[0].cursosMatriculados.push({"codigo": curso})
+        ravenSession.saveChanges()
+        return;
+      }
+    })
   }catch(error){
     console.log(error)
   }

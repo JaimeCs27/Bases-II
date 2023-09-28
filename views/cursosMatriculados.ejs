@@ -24,17 +24,18 @@
     
     <div class="form-box cursosMatriculados">
         <h1></h1>
-        <form action="/cursoDetalles" method="post">
             <% courses.forEach(function(course) { %>
                     <!-- Aquí se crea un botón para cada curso -->
+                <form action="/cursoDetalles" method="post">
                 <div>
-                    <label class="labelCurso"><%= course.name %> </label>
+                    <label class="labelCurso" id="curso"><%= course.name %> </label>
+                    <input type="text" value="<%= course.id %>" name="input" hidden>
                     <button type="submit" class="btn" name="curso" >
                         Ver Detalles
                     </button>
+                </form>
                 </div> 
             <% }); %>
-        </form>
     </div>
 
     

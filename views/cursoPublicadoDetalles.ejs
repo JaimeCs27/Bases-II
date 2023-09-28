@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang ="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE-edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> TecVegetal </title>
+    <link rel="stylesheet" href="css/curso.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+</head> 
+
+<body>
+    <header>
+        <h2 class="logo"><img src="css/Imagenes/Logo Tec.png"></h2>
+        <nav class="navigation">
+            <a href="/setMainPage">Mi Perfil</a>
+            <a href="/setCurso">Cursos creados</a>
+            <a href="/setEnrollment">Cursos matriculados</a>
+            <a href="/setFindCourses">Cursos publicados</a>
+            <a href="#">Contactos</a>
+            <a href="#">Mensajes</a>
+        </nav>
+    </header>
+
+    <div class="form-box seccion">
+        <form>
+        <div class="info">
+            <label><%= course.name%></label>
+        </div>
+
+        <nav class="navigation1">
+            <a href="#">Detalles</a>
+        </nav>
+        <input type="hidden" name="codigo" value="<%= course.id %>">
+        <div class="detalles">
+            <p>Código: <%= course.id%></p>
+            <p>Descripción: <%= course.description%></p>
+            <p>Fecha de inicio: <%= course.start%></p>
+            <p>Fecha de finalización: <%= course.end%></p>
+            
+        </div>
+        
+        <div class="boton">
+            <button type="submit" formaction="/enroll" formmethod="post" class="btn">Matricular curso</button>
+        </div>
+        </form>
+    </div>
+
+</body>
+</html>

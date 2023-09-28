@@ -19,76 +19,81 @@
             <a href="/setFindCourses">Cursos publicados</a>
             <a href="#">Contactos</a>
             <a href="#">Mensajes</a>
+            
         </nav>
     </header>
-    
-
     <div class="search-box cursosMatriculados">
         <div class="input-box">
             <i class='bx bxs-search'></i>
             <input type="text" id="search-box" onkeyup="sendData(this)">
-            <label>Buscar un curso</label>            
-            <script>
-                function sendData(e) {
-                    const div = document.createElement('div');
-                    div.innerHTML = '';
-                        fetch('getCourses', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ payload: e.value })
-                        }).then(res => res.json()).then(data => {
-                            let payload = data.payload;
-                            div.innerHTML = '';
-            
-                            if (payload.length < 1) {
-                                div.innerHTML = '<p>Sorry</p>';
-                                return;
-                            }
-            
-                            payload.forEach((item) => {
-                                const label = document.createElement('label');
-                                label.className = 'labelCurso';
-                                label.textContent = item.name;
-            
-                                const button = document.createElement('button');
-                                button.type = 'submit';
-                                button.className = 'btn';
-                                button.name = 'curso';
-                                button.value = item.name;
-                                button.textContent = 'Ver Detalles';
-                                button.formAction = '/cursoDetalles';
-                                button.formMethod = 'post'; 
-            
-                                div.appendChild(label);
-                                div.appendChild(button);
-                            });
-            
-                            // Limpia los botones anteriores antes de agregar los nuevos
-                            cursosPublicadosForm.innerHTML = '';
-                            cursosPublicadosForm.appendChild(div);
-                        });
-                        return;
-                    }
-            </script>
-
-
-
+            <label>Buscar un curso</label>
         </div>
     </div>
-    <form action="/cursoDetalles" method="post">
     <div class="form-box cursosPublicados" id="cursosPublicadosForm">
             <% courses.forEach(function(course) { %>
                 <!-- Agregar un if para verificar si el curso coincide con la búsqueda -->
-                <div id="prueba">
+                <form action="/cursoDetallesPublicados" method="post">
                     <label class="labelCurso"><%= course.name %> </label>
+                    <input type="text" value="<%= course.id %>" name="input" hidden>
                     <button type="submit" class="btn" name="curso" >
                         Ver Detalles
                     </button>
-                </div>
+                </form>
             <% }); %> 
     </div>
     </form>
 
+    <script>
+        function sendData(e) {
+            const div = document.createElement('div');
+            div.innerHTML = '';
+                fetch('getCourses', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ payload: e.value })
+                }).then(res => res.json()).then(data => {
+                    let payload = data.payload;
+                    div.innerHTML = '';
     
+                    if (payload.length < 1) {
+                        div.innerHTML = '<p>Sorry</p>';
+                        return;
+                    }
+    
+                    payload.forEach((item) => {
+                        const form = document.createElement('form')
+                        form.action = '/cursoDetallesPublicados'
+                        form.method = 'post'
+
+                        const input = document.createElement('input')
+                        input.type = 'text'
+                        input.value = item.id
+                        input.name = 'input'
+                        input.hidden = true
+
+                        const label = document.createElement('label');
+                        label.className = 'labelCurso';
+                        label.textContent = item.name;
+    
+                        const button = document.createElement('button');
+                        button.type = 'submit';
+                        button.className = 'btn';
+                        button.name = 'curso';
+                        button.value = item.name;
+                        button.textContent = 'Ver Detalles';
+                        form.appendChild(input)
+                        form.appendChild(label);
+                        form.appendChild(button);
+                        div.appendChild(form)
+                        
+                    });
+    
+                    // Limpia los botones anteriores antes de agregar los nuevos
+                    cursosPublicadosForm.innerHTML = '';
+                    cursosPublicadosForm.appendChild(div);
+                });
+                return;
+            }
+    </script>
 </body>
 </html>
