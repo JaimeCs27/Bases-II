@@ -8,6 +8,7 @@ const storage = multer.memoryStorage()
 const upload = multer({ storage })
 const bodyParser = require('body-parser')
 const router = express.Router()
+const bcrypt = require('bcrypt')
 const userLoging = []
 
 
@@ -32,7 +33,7 @@ const collection = require("./src/mongodb.js")
 
 //Conexion con Neoj4
 const neo4j = require('neo4j-driver')
-const driver = neo4j.driver('bolt://127.0.0.1', neo4j.auth.basic('si', '12345678'));
+const driver = neo4j.driver('bolt://127.0.0.1', neo4j.auth.basic('neo4j', '12345678'));
 const neo4jSession = driver.session() 
 
 var OrientDB = require('orientjs');
@@ -181,13 +182,13 @@ app.post("/findCourse", async function(req, res){
   }
 })
 
-app.post("/login", function(req, res) {
+app.post("/login", async function(req, res) {
     const user = req.body.username;
     const password = req.body.password;
     try{
       ravenSession.query({collection : "Users"}).whereEquals("username", user).all().then(result =>{
-        result.forEach(function(result){
-          if(result.password == password){
+        result.forEach(async function(result){
+          if(await bcrypt.compare(password, result.password)){
             userLoging.push(user)
             //res.redirect('/login/${user}')
             res.render('mainPage')
@@ -222,31 +223,34 @@ app.post('/getCourses', async (req,res)=> {
 })
 
 
-
 app.post("/register",upload.single('profile_pic'), async function(req, res){
-    var user = req.body.usernameR;
-    var password = req.body.passR;
-    var nombre = req.body.nombre_completo;
-    var fechaNacimiento = req.body.fecha_nacimiento
-    const file = req.file
-    const matriculados = []
-    let usuario = {
-      username : user,
-      password : password,
-      nombre : nombre,
-      fechaNacimiento: fechaNacimiento,
-      cursosMatriculados: matriculados,
-      cursosCreados: [],
-      "@metadata": {
-        "@collection": "Users"
-      }
-    }
     try {
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(req.body.passR, salt);
+      const user = req.body.usernameR;
+
+      var password = hashedPassword;
+      var nombre = req.body.nombre_completo;
+      var fechaNacimiento = req.body.fecha_nacimiento
+      const file = req.file
+      const matriculados = []
+      let usuario = {
+        username : user,
+        password : password,
+        salt : salt,
+        nombre : nombre,
+        fechaNacimiento: fechaNacimiento,
+        cursosMatriculados: matriculados,
+        cursosCreados: [],
+        "@metadata": {
+          "@collection": "Users"
+        }
+      }
       ravenSession.store(usuario, 'Users/'+user)
       ravenSession.advanced.attachments.store('Users/'+user, file.originalname, file.buffer, file.mimetype)
       ravenSession.saveChanges();
       try {
-        const result = await neo4jSession.run('CREATE(n:Users {username:$userParam}) RETURN n', {userParam : user})
+        const result = await neo4jSession.run('CREATE(n:Users {username:$user}) RETURN n', { user: user})
         .then(function(result){
             console.log('Usuario '+ result.username + ' agreagado con exito a neo4j')
         })
@@ -260,9 +264,7 @@ app.post("/register",upload.single('profile_pic'), async function(req, res){
     } catch (error) {
       console.log('No se logro agregar el usuario a raven'+error)
     }
-    ravenSession.dispose();
-    
-    
+    ravenSession.dispose();  
 })
 /*
 app.post("/", async function(req, res){
