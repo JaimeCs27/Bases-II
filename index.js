@@ -138,7 +138,8 @@ app.get("/setCurso", async function(req, res){
 })
 
 app.get("/setMainPage", function(req, res){
-  res.render('mainPage')
+  const usuario = ravenSession.find({username:user})
+  res.render('mainPage', {user : usuario})
 })
 
 app.post('/goToCreateCourse', function(req, res){
@@ -190,8 +191,8 @@ app.post("/login", async function(req, res) {
         result.forEach(async function(result){
           if(await bcrypt.compare(password, result.password)){
             userLoging.push(user)
-            //res.redirect('/login/${user}')
-            res.render('mainPage')
+
+            res.render('mainPage', {user:result})
           }
           else
             console.log('No se pudo acceder')
@@ -203,14 +204,6 @@ app.post("/login", async function(req, res) {
     }
     
 })
-
-app.get("/login/:username", (req,res) => {
-  const {username} = req.params
-  res.render(path.join(__dirname, 'views/mainPage.ejs'), {username: username})
-})
-
-
-
 
 app.post('/getCourses', async (req,res)=> {
   let payload = req.body.payload.trim();
@@ -252,7 +245,7 @@ app.post("/register",upload.single('profile_pic'), async function(req, res){
       try {
         const result = await neo4jSession.run('CREATE(n:Users {username:$user}) RETURN n', { user: user})
         .then(function(result){
-            console.log('Usuario '+ result.username + ' agreagado con exito a neo4j')
+            console.log('Usuario '+ user + ' agreagado con exito a neo4j')
         })
         .catch(function(error){
             console.log(error);
@@ -274,17 +267,12 @@ app.post("/", async function(req, res){
 })
 */
 
-
-
 app.post('/subir-archivo', upload.single('archivo'), (req, res) => {
   const archivo = req.file
   console.log(archivo)
   fs.writeFileSync('public/imagen.jpg', archivo.buffer)
   res.send('<h1>Mostrar Imagen</h1><img src=/imagen.jpg alt="Imagen" />');
 })
-
-
-
 
 app.post("/createCourse", async function(req, res){  // SE OCUPA EL USUARIO DE LA PAGINA
     var user = userLoging[0]
@@ -383,14 +371,16 @@ app.post("/editUser", async function(req, res){
     var nombre = req.body.nombre_completo;
     var fechaNacimiento = req.body.fecha_nacimiento
     const file = req.file
-    console.log(file)
     try {
-      const userInfo = ravenSession.query({collection: 'Users'}).whereEquals("username", user).all()
-      userInfo.password = password
+      const userInfo = await ravenSession.load("Users/"+user)
+      if(password != '')
+        userInfo.password = password
       userInfo.nombre = nombre
       userInfo.fechaNacimiento = fechaNacimiento
-      const oldFile = userInfo.advanced.attachments.getNames("Users/"+user)
+      const oldFile = await ravenSession.advanced.attachments.getNames(userInfo)
+      console.log(oldFile)
       if(file != null){
+        console.log('aqui')
         userInfo.advanced.attachments.delete("Users/"+user, oldFile.name)
         userInfo.advanced.attachments.store('Users/'+user, file.originalname, file.buffer, file.mimetype)
       }

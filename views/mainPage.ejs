@@ -21,32 +21,33 @@
             <a href="#">Mensajes</a>
         </nav>
 
+
         <div class="form-box register">
-            <form action="/update" name="registerForm" method="post">
+            <form action="/editUser" name="registerForm" method="post">
             <div class="info">
                 <h3>Información Personal</h3>
             </div>
             <div class="input-pic">
-                <input type="file" accept="image/jpg, image/jpeg, image/png" required>
+                <input type="file" accept="image/jpg, image/jpeg, image/png">
                 <label>Foto perfil</label>
             </div>
             <div class="input-box">
                 <i class='bx bxs-user'></i>
-                <input type="Usuario" name="usuarioR"required>
-                <label>Usuario</label>
+                <input type="Usuario" name="usuarioR" value="<% user.username%>" disabled>
+                <label><%= user.username%></label>
             </div>
             <div class="input-box">
                 <i class='bx bxs-user'></i>
-                <input type="contraseña" name="contraseñaR"required>
+                <input type="password" name="passR">
                 <label>Contraseña</label>
             </div>
             <div class="input-box">
                 <i class='bx bxs-user'></i>
-                <input type="text" name="nombre_completo"required>
+                <input type="text" name="nombre_completo" value="<%= user.nombre%>" required>
                 <label>Nombre Completo</label>
             </div>
             <div class="input-date">
-                <input type="date" required>
+                <input type="date" name="fecha_nacimiento" required>
                 <label>Fecha Nacimiento</label>
             </div>
             <button type="submit" class="btn">Actualizar</button>
