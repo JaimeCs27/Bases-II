@@ -10,6 +10,7 @@ const bodyParser = require('body-parser')
 const router = express.Router()
 const bcrypt = require('bcrypt')
 const userLoging = []
+var currentCourse = []
 
 
 //Conexion con Raven
@@ -108,12 +109,14 @@ app.post("/cursoDetallesPublicados", async function(req, res){
   res.render('cursoPublicadoDetalles', {course : course[0]})
 })
 
-// app.get("/cursoDetalles", async function(req, res){
-//   console.log('parametros')
-//   console.log(req.params)
-// })
+app.post("/cursoDetallesMatriculados", async function(req, res){
+  const course = await collection.find({id : req.body.input})
+  currentCourse.push(course[0])
+  res.render('cursoMatriculadoDetalle', {course : course[0]})
+})
 
 app.get("/setCurso", async function(req, res){
+  currentCourse = []
   try{
     const courses = await collection.find({})
     const user = userLoging[0]
@@ -139,6 +142,7 @@ app.get("/setCurso", async function(req, res){
 
 app.get("/setMainPage", function(req, res){
   const usuario = ravenSession.find({username:user})
+  currentCourse = []
   res.render('mainPage', {user : usuario})
 })
 
@@ -146,7 +150,28 @@ app.post('/goToCreateCourse', function(req, res){
   res.render('crearCurso')
 })
 
+app.get('/detallesMatriculado', async function(req, res){
+  const curso = currentCourse[0]
+  res.render('cursoMatriculadoDetalle', {course : curso})
+})
+
+app.get('/evaluacionesMatriculado', async function(req, res){
+  const curso = currentCourse[0]
+  res.render('Evaluaciones', {course : curso})
+})
+
+app.get('/estudiantesMatriculado', async function(req, res){
+  const curso = currentCourse[0]
+  res.render('estudiantes', {course : curso})
+})
+
+app.get('/seccionesMatriculado', async function(req, res){
+  const curso = currentCourse[0]
+  res.render('secciones', {course : curso})
+})
+
 app.get("/setFindCourses", async function(req, res){
+  currentCourse = []
   try{
     const courses = await collection.find({})
     res.render('cursosPublicados', {courses : courses, payload : courses}) // aqui se agrega el html donde se muestran los cursos
@@ -156,6 +181,7 @@ app.get("/setFindCourses", async function(req, res){
 })
 
 app.get("/setEnrollment", async function(req, res){
+  currentCourse = []
   try{
     const courses = await collection.find({})
     const user = userLoging[0]
@@ -303,7 +329,7 @@ app.post("/createCourse", async function(req, res){  // SE OCUPA EL USUARIO DE L
 
 app.post("/addEvaluation", async function(req, res){
   try{
-    const filter = {id: 'IC4023'}
+    const filter = {id: 'IC4023'}  //id del curso
     var cod = req.body.evaluacion_cod
     var start = req.body.evaluacion_start
     var end = req.body.evaluacion_end 
@@ -326,10 +352,8 @@ app.post("/enroll", async function(req, res){
   try{
     var user = userLoging[0]  // el usuario debe venir por parametro de alguna manera
     var idCurso = req.body.codigo   // el codigo debe venir por parametro
-    console.log(idCurso)
     const curso = await collection.find({id : idCurso})
     const students = curso[0].students
-    console.log(students)
     if(students.length == 0){
       const result = await collection.updateOne(
         {id : idCurso},
@@ -339,27 +363,33 @@ app.post("/enroll", async function(req, res){
           }
         }} 
       )
-      const userInfo = await ravenSession.query({collection: 'Users'}).whereEquals("username", user).all()
+      const userInfo = await ravenSession.load('Users/'+user)
       userInfo[0].cursosMatriculados.push({"codigo": curso})
       ravenSession.saveChanges()
       return;
     }
+    var repetido = false
     students.forEach(async function(student){
-      if(student.user != user){
-        const result = await collection.updateOne(
-          {id : idCurso},
-          {$push : {
-            students: {
-              user: user
-            }
-          }} 
-        )
-        const userInfo = await ravenSession.query({collection: 'Users'}).whereEquals("username", user).all()
-        userInfo[0].cursosMatriculados.push({"codigo": curso})
-        ravenSession.saveChanges()
-        return;
+      if(student.user == user){
+        repetido = true
       }
+      console.log(student)
     })
+    if(!repetido){
+      const result = await collection.updateOne(
+        {id : idCurso},
+        {$push : {
+          students: {
+            user: user
+          }
+        }} 
+      )
+      const userInfo = await ravenSession.load('Users/'+user)
+      console.log(userInfo)
+      userInfo.cursosMatriculados.push({"codigo": idCurso})
+      ravenSession.saveChanges()
+      return;
+    }
   }catch(error){
     console.log(error)
   }

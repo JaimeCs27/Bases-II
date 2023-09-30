@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE-edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title> TecVegetal </title>
-    <link rel="stylesheet" href="css/mensaje.css">
+    <link rel="stylesheet" href="css/secciones.css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 </head> 
 
@@ -23,26 +23,23 @@
     </header>
 
     <div class="form-box seccion">
-        
         <div class="info">
             <label>Curso 1</label>
         </div>
+
         <nav class="navigation1">
             <a href="/detallesMatriculado">Detalles</a>
             <a href="/evaluacionesMatriculado">Evaluaciones</a>
             <a href="/estudiantesMatriculado">Estudiantes</a>
             <a href="/seccionesMatriculado">Secciones</a>
-        </nav> 
+        </nav>
         <input type="hidden" name="codigo" value="<%= course.id %>">
-        
-        <div class="estudiantes"></div>
-        <% course.students.forEach(function(student) { %>
-            <form action='/verPersona' method="post">  
-                <button type="submit" class="btn2"><%= student.user %></button>
-            </form>
-        <% }); %>
-        </div>
-        
+    <div class="botones">
+    <% course.sections.forEach(function(section) { %>
+        <form action="/verSeccion" method="post">
+        <button type="submit" class="btn2"><%= section.description %></button>
+        </form>
+    <% }); %>
     </div>
 
 </body>
