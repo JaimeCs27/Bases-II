@@ -115,6 +115,12 @@ app.post("/cursoDetallesMatriculados", async function(req, res){
   res.render('cursoMatriculadoDetalle', {course : course[0]})
 })
 
+app.post("/miCursoDetalles", async function(req, res){
+  const course = await collection.find({id : req.body.input})
+  currentCourse.push(course[0])
+  res.render('cursoCreadoDetalle', {course : course[0]})
+})
+
 app.get("/setCurso", async function(req, res){
   currentCourse = []
   try{
@@ -141,13 +147,18 @@ app.get("/setCurso", async function(req, res){
 })
 
 app.get("/setMainPage", function(req, res){
-  const usuario = ravenSession.find({username:user})
+  const usuario = ravenSession.query({username:userLoging[0]})
   currentCourse = []
-  res.render('mainPage', {user : usuario})
+  res.render('mainPage', {user:usuario})
 })
 
 app.post('/goToCreateCourse', function(req, res){
   res.render('crearCurso')
+})
+
+app.get('/detallesCreado', async function(req, res){
+  const curso = currentCourse[0]
+  res.render('cursoCreadoDetalle', {course : curso})
 })
 
 app.get('/detallesMatriculado', async function(req, res){
@@ -394,6 +405,9 @@ app.post("/enroll", async function(req, res){
     console.log(error)
   }
 })
+
+
+
 
 app.post("/editUser", async function(req, res){
     var user = userLoging[0]   // EL USUARIO DEBE VENIR POR PARAMETRO

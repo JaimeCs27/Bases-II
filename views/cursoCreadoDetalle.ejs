@@ -13,10 +13,10 @@
     <header>
         <h2 class="logo"><img src="css/Imagenes/Logo Tec.png"></h2>
         <nav class="navigation">
-            <a href="#">Mi Perfil</a>
-            <a href="#">Cursos creados</a>
-            <a href="#">Cursos matriculados</a>
-            <a href="#">Cursos publicados</a>
+            <a href="/setMainPage">Mi Perfil</a>
+            <a href="/setCurso">Cursos creados</a>
+            <a href="/setEnrollment">Cursos matriculados</a>
+            <a href="/setFindCourses">Cursos publicados</a>
             <a href="#">Contactos</a>
             <a href="#">Mensajes</a>
         </nav>
@@ -29,18 +29,18 @@
         </div>
 
         <nav class="navigation1">
-            <a href="#">Detalles</a>
-            <a href="#">Evaluaciones</a>
-            <a href="#">Estudiantes</a>
-            <a href="#">Secciones</a>
+            <a href="/detallesCreado">Detalles</a>
+            <a href="/evaluacionesMatriculado">Evaluaciones</a>
+            <a href="/estudiantesMatriculado">Estudiantes</a>
+            <a href="/seccionesMatriculado">Secciones</a>
         </nav>
 
+        <input type="hidden" name="codigo" value="<%= course.id %>">
         <div class="detalles">
-            <p>Código: </p>
-            <p>Profesor: </p>
-            <p>Descripción: </p>
-            <p>Fecha de inicio: </p>
-            <p>Fecha de finalización: </p>
+            <p>Código: <%= course.id%></p>
+            <p>Descripción: <%= course.description%></p>
+            <p>Fecha de inicio: <%= course.start%></p>
+            <p>Fecha de finalización: <%= course.end%></p>
         </div>
         <div class="boton">
             <button type="submit" class="btn">Clonar curso</button>
