@@ -11,7 +11,7 @@ const router = express.Router()
 const bcrypt = require('bcrypt')
 const userLoging = []
 var currentCourse = []
-
+var questions = []
 
 //Conexion con Raven
 const { DocumentStore, GetServerWideExternalReplicationOperation, DocumentInfo } = require('ravendb');
@@ -80,16 +80,7 @@ async function testNeo4jConnection() {
     session.close();
   }
 }
-/*
-testNeo4jConnection()
-  .then(() => {
-    // Cierra la conexión cuando hayas terminado
-    driver.close();
-  })
-  .catch(error => {
-    console.error('Error al probar la conexión a Neo4j:', error);
-  });
-*/
+
 
 app.use(express.urlencoded({extended:true}))
 const publicPath = path.join(__dirname, 'public')
@@ -104,6 +95,12 @@ app.get('/', (req, res) => {
   res.render('index.ejs');
 });
 
+app.post('/menuCrearEvaluacion', async function(req, res){
+  const course = await collection.find({id : req.body.codigo})
+  console.log(course)
+  res.render('crearEvaluacion', {course : course[0]})
+})
+
 app.post("/cursoDetallesPublicados", async function(req, res){
   const course = await collection.find({id : req.body.input})
   res.render('cursoPublicadoDetalles', {course : course[0]})
@@ -113,6 +110,11 @@ app.post("/cursoDetallesMatriculados", async function(req, res){
   const course = await collection.find({id : req.body.input})
   currentCourse.push(course[0])
   res.render('cursoMatriculadoDetalle', {course : course[0]})
+})
+
+app.get('/estudiantesMiCurso',async function(req, res){
+  const curso = currentCourse[0]
+  res.render('estudiantesMiCurso', {course : curso})
 })
 
 app.post("/miCursoDetalles", async function(req, res){
@@ -127,19 +129,15 @@ app.get("/setCurso", async function(req, res){
     const courses = await collection.find({})
     const user = userLoging[0]
     const userInfos = await ravenSession.load('Users/'+user)
-    console.log("setCurso: " + userInfos)
     const creados = userInfos.cursosCreados
     var arr = []
     if(creados)
       courses.forEach(function(course){
           creados.forEach(function(myCourses){
-            console.log('Curso ID: ' + course.id)
-            console.log('Mi curso id: ' + myCourses.codigo)
             if(course.id == myCourses.codigo)
               arr.push(course)
           })
       })
-    console.log(arr)
     res.render('cursosCreados', {courses : arr}) // aqui se agrega el html donde se muestran los cursos
   }catch(error){
     console.log(error)
@@ -159,6 +157,11 @@ app.post('/goToCreateCourse', function(req, res){
 app.get('/detallesCreado', async function(req, res){
   const curso = currentCourse[0]
   res.render('cursoCreadoDetalle', {course : curso})
+})
+
+app.get('/evaluacionesCreado', async function(req, res){
+  const curso = currentCourse[0]
+  res.render('evaluacionCursoCreado', {course : curso})
 })
 
 app.get('/detallesMatriculado', async function(req, res){
@@ -340,20 +343,22 @@ app.post("/createCourse", async function(req, res){  // SE OCUPA EL USUARIO DE L
 
 app.post("/addEvaluation", async function(req, res){
   try{
-    const filter = {id: 'IC4023'}  //id del curso
-    var cod = req.body.evaluacion_cod
+    console.log(req.body.codigo)
+    const filter = {id: req.body.codigo}  //id del curso
+    var cod = req.body.nombreEvaluacion
     var start = req.body.evaluacion_start
     var end = req.body.evaluacion_end 
-    await collection.updateOne(filter, 
+    const result = await collection.updateOne(filter, 
       {$push: {
         evaluations : {
           code : cod,
           start : start,
-          end : end
+          end : end,
+          questions: questions
         },
       },
     })
-
+    console.log(result)
   }catch(error){
     console.log(error)
   }
@@ -375,7 +380,7 @@ app.post("/enroll", async function(req, res){
         }} 
       )
       const userInfo = await ravenSession.load('Users/'+user)
-      userInfo[0].cursosMatriculados.push({"codigo": curso})
+      userInfo.cursosMatriculados.push({"codigo": idCurso})
       ravenSession.saveChanges()
       return;
     }
@@ -435,14 +440,22 @@ app.post("/editUser", async function(req, res){
     ravenSession.dispose();
 })
 
-app.post("/addQuestion", async function(req, res){
+app.post("/addQuestion", function(req, res){
   try{
-    var question = req.body.question
-    var opcion1 = req.body.opcion1
-    var opcion2 = req.body.opcion2
-    var opcion3 = req.body.opcion3
-    var opcion4 = req.body.opcion4
-    var correcta = req.body.correcta
+    var question = req.body.pregunta
+    var opcion1 = req.body.respuesta1
+    var opcion2 = req.body.respuesta2
+    var opcion3 = req.body.respuesta3
+    var opcion4 = req.body.respuesta4
+    var correcta = true
+    if(req.body.cbox1 === 'checkbox')
+      correcta = 1
+    if(req.body.cbox2 === 'checkbox')
+      correcta = 2
+    if(req.body.cbox3 === 'checkbox')
+      correcta = 3
+    if(req.body.cbox4 === 'checkbox')
+      correcta = 4
     const data = {
       question: question,
       opcion1: opcion1,
@@ -451,15 +464,7 @@ app.post("/addQuestion", async function(req, res){
       opcion4: opcion4,
       correct: correcta
     }
-    const result = await collection.updateOne(
-      {id: 'IC4023', "evaluations.code": 'Evaluacion 2'},    //AQUI DEBE IR EL NOMBRE DE LA EVALUACION Y EL CODIGO DEL CURSO
-      {$push: {"evaluations.$.questions": data}}  
-    )
-    if (result.matchedCount === 0){
-      console.log('No')
-    } else{
-      console.log('Si')
-    }
+    questions.push(data)
   } catch(error){
     console.log(error)
   }

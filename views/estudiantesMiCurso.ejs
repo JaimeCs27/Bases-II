@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE-edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title> TecVegetal </title>
-    <link rel="stylesheet" href="css/curso.css">
+    <link rel="stylesheet" href="css/mensaje.css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 </head> 
 
@@ -23,29 +23,26 @@
     </header>
 
     <div class="form-box seccion">
-        <form action="cursoDetalle" name="detalleCursoForm" method="post">
+        
         <div class="info">
             <label>Curso 1</label>
         </div>
-
         <nav class="navigation1">
             <a href="/detallesCreado">Detalles</a>
             <a href="/evaluacionesCreado">Evaluaciones</a>
             <a href="/estudiantesMiCurso">Estudiantes</a>
             <a href="/seccionesMatriculado">Secciones</a>
-        </nav>
-
+        </nav> 
         <input type="hidden" name="codigo" value="<%= course.id %>">
-        <div class="detalles">
-            <p>Código: <%= course.id%></p>
-            <p>Descripción: <%= course.description%></p>
-            <p>Fecha de inicio: <%= course.start%></p>
-            <p>Fecha de finalización: <%= course.end%></p>
+        
+        <div class="estudiantes"></div>
+        <% course.students.forEach(function(student) { %>
+            <form action='/verPersona' method="post">  
+                <button type="submit" class="btn2"><%= student.user %></button>
+            </form>
+        <% }); %>
         </div>
-        <div class="boton">
-            <button type="submit" class="btn">Clonar curso</button>
-        </div>
+        
     </div>
 
 </body>
-</html>

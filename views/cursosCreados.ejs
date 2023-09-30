@@ -23,18 +23,20 @@
     </header>
 
     <div class="form-box cursosCreados">
-        <form action="/miCursoDetalles" method="post">
+        
             <% courses.forEach(function(course) { %>
                     <!-- Aquí se crea un botón para cada curso -->
                 <div>
+                    <form action="/miCursoDetalles" method="post">
                     <label class="labelCurso"><%= course.name %> </label>
                     <input type="text" value="<%= course.id %>" name="input" hidden>
                     <button type="submit" class="btn" name="curso" >
                         Ver Detalles
                     </button>
+                    </form>
                 </div> 
             <% }); %>
-        </form>
+        
         <form action="/goToCreateCourse" method="post">
             <button type="submit" class="btn2">Agregar nuevo curso</button>
         </form>

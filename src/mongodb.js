@@ -12,7 +12,13 @@ const courseSchema = new Schema ({
     [
         {
             description: String,
-            document: Buffer
+            documents: 
+            [
+                {
+                    name: String,
+                    document: Buffer
+                }
+            ]
         }
     ],
     students:

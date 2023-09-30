@@ -13,14 +13,41 @@
     <header>
         <h2 class="logo"><img src="css/Imagenes/Logo Tec.png"></h2>
         <nav class="navigation">
-            <a href="#">Mi Perfil</a>
-            <a href="#">Cursos creados</a>
-            <a href="#">Cursos matriculados</a>
-            <a href="#">Cursos publicados</a>
-            <a href="#">Contactos</a>
-            <a href="#">Mensajes</a>
+            <nav class="navigation">
+                <a href="/setMainPage">Mi Perfil</a>
+                <a href="/setCurso">Cursos creados</a>
+                <a href="/setEnrollment">Cursos matriculados</a>
+                <a href="/setFindCourses">Cursos publicados</a>
+                <a href="#">Contactos</a>
+                <a href="#">Mensajes</a>
+            </nav>
         </nav>
     </header>
+    <form action="/addQuestion" method="post">
+        <div class="evaluacion">
+            
+            <div class="pregunta">
+                <input type="text" id="pregunta" name="pregunta">
+                <label>Escriba la pregunta</label>
+            </div>
+            <div class="respuestas">
+                <input type="text" id="respuesta1" name="respuesta1"><input type="checkbox" id="cbox1" name="cbox1" value="checkbox" /><br />
+                <input type="text" id="respuesta2" name="respuesta2"><input type="checkbox" id="cbox2" name="cbox2" value="checkbox" /><br />
+                <input type="text" id="respuesta3" name="respuesta3"><input type="checkbox" id="cbox3" name="cbox3" value="checkbox" /><br />
+                <input type="text" id="respuesta4" name="respuesta4"><input type="checkbox" id="cbox4" name="cbox4" value="checkbox" /><br />
+            </div>
+        </div>
+        
+        <div class="button">
+            <button type="submit" id="add" class="btn">Agregar otra pregunta</button>
+        </div>
+        <div class="button">
+            <button type="button" id="limpiar" class="btn">Limpiar</button>
+        </div>
+    </form>
+
+    <form action="/addEvaluation" method="post">
+    
     <div class="headerEv">
         <div class="input-box">
             <input type="text" name="nombreEvaluacion"required>
@@ -28,33 +55,77 @@
         </div>
     </div>
     <div class="input-date">
-        <input type="date" required>
+        <input type="date" name="evaluacion_start" required>
         <label>Fecha de inicio</label>
     </div>
     <div class="input-date">
-        <input type="date" required>
+        <input type="date" name="evaluacion_end" required>
         <label>Fecha de finalización</label><br />
     </div>
 
     <div class="formEvaluacion">
-        <div class="evaluacion">
-            <div class="pregunta">
-                <input type="text" name="pregunta"required>
-                <label>Escriba la pregunta</label>
-            </div>
-            <div class="respuestas">
-            <input type="radio" name="preg1" value="1" /> <input type="text" name="respuesta1"required><input type="checkbox" id="cbox1" value="checkbox" /><br />
-            <input type="radio" name="preg1" value="1" /> <input type="text" name="respuesta1"required><input type="checkbox" id="cbox2" value="checkbox" /><br />
-            <input type="radio" name="preg1" value="1" /> <input type="text" name="respuesta1"required><input type="checkbox" id="cbox3" value="checkbox" /><br />
-            </div>
-        </div>
-        <div class="button">
-            <button type="submit" class="btn">Agregar otra pregunta</button>
-        </div>
+        
+        
+        <input type="hidden" name="codigo" value="<%= course.id %>">
         <div class="button">
             <button type="submit" class="btn">Crear evaluacion</button>
         </div>
+        </form>
     </div>
+
+
+<script>
+    document.getElementById("limpiar").addEventListener("click", function() {
+        var input1 = document.getElementById("respuesta1");
+        var input2 = document.getElementById("respuesta2");
+        var input3 = document.getElementById("respuesta3");
+        var input4 = document.getElementById("respuesta4");
+        var pregunta = document.getElementById('pregunta');
+
+        input1.value = ""
+        input2.value = ""
+        input3.value = ""
+        input4.value = ""
+        pregunta.value = ""
+    });
+
+    document.getElementById('cbox1').addEventListener('click', function(){
+        var cbox2 = document.getElementById("cbox2");
+        var cbox3 = document.getElementById("cbox3");
+        var cbox4 = document.getElementById("cbox4");
+
+        cbox2.checked = false
+        cbox3.checked = false
+        cbox4.checked = false
+    })
+    document.getElementById('cbox2').addEventListener('click', function(){
+        var cbox1 = document.getElementById("cbox1");
+        var cbox3 = document.getElementById("cbox3");
+        var cbox4 = document.getElementById("cbox4");
+
+        cbox1.checked = false
+        cbox3.checked = false
+        cbox4.checked = false
+    })
+    document.getElementById('cbox3').addEventListener('click', function(){
+        var cbox2 = document.getElementById("cbox2");
+        var cbox1 = document.getElementById("cbox1");
+        var cbox4 = document.getElementById("cbox4");
+
+        cbox2.checked = false
+        cbox1.checked = false
+        cbox4.checked = false
+    })
+    document.getElementById('cbox4').addEventListener('click', function(){
+        var cbox2 = document.getElementById("cbox2");
+        var cbox3 = document.getElementById("cbox3");
+        var cbox1 = document.getElementById("cbox1");
+
+        cbox2.checked = false
+        cbox3.checked = false
+        cbox1.checked = false
+    })
+</script>
 
 </body>
 </html>
