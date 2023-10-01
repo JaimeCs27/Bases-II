@@ -13,29 +13,45 @@
     <header>
         <h2 class="logo"><img src="css/Imagenes/Logo Tec.png"></h2>
         <nav class="navigation">
-            <a href="#">Mi Perfil</a>
-            <a href="#">Cursos creados</a>
-            <a href="#">Cursos matriculados</a>
-            <a href="#">Cursos publicados</a>
+            <a href="/setMainPage">Mi Perfil</a>
+            <a href="/setCurso">Cursos creados</a>
+            <a href="/setEnrollment">Cursos matriculados</a>
+            <a href="/setFindCourses">Cursos publicados</a>
             <a href="#">Contactos</a>
             <a href="#">Mensajes</a>
         </nav>
     </header>
 
     <div class="form-box seccion">
-        <form action="crearSeccion" name="SeccionForm" method="post">
         <div class="info">
             <h3>Crear sección</h3>
         </div>
-        <div class="input-box">
-            <input type="text" name="nombreSeccion"required>
-            <label>Nombre de la sección</label>
-        </div>
-        <div class="input-pic">
-            <input type="file" multiple required>
-            <label>Subir archivo</label>
-        </div>
-        <button type="submit" class="btn">Crear sección</button>
+        <form action="/addFile" method="post" enctype="multipart/form-data">
+            <div class="input-pic">
+                <input type="file" name="file" required>           
+            </div>
+            <input type="text" name="titulo" placeholder="Titulo del archivo" required>
+            <button type="submit" class="btn">Agregar Documento</button>
+        </form>
+
+        
+
+        <% if (course && course.imgSrc) { %>
+            <div class="images">
+                <img src="<%= course.imgSrc %>">
+            </div>
+        <% } %>
+        
+
+        <form action="/addSection" name="SeccionForm" method="post">
+            <input type="hidden" name="codigo" value="<%= course.id %>">
+            <div class="input-box">
+                <input type="text" name="nombreSeccion"required>
+                <label>Nombre de la sección</label>
+            </div>
+            
+            <button type="submit" class="btn">Crear sección</button>
+        </form>
     </div>
 
 </body>

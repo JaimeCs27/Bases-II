@@ -24,25 +24,27 @@
         </nav>
     </header>
     <form action="/addQuestion" method="post">
-        <div class="evaluacion">
+        <div class="formpregunta">
+            <div class="evaluacion">
+                
+                <div class="pregunta">
+                    <input type="text" id="pregunta" name="pregunta">
+                    <label>Escriba la pregunta</label>
+                </div>
+                <div class="respuestas">
+                    <input type="text" id="respuesta1" name="respuesta1"><input type="checkbox" id="cbox1" name="cbox1" value="checkbox" /><br />
+                    <input type="text" id="respuesta2" name="respuesta2"><input type="checkbox" id="cbox2" name="cbox2" value="checkbox" /><br />
+                    <input type="text" id="respuesta3" name="respuesta3"><input type="checkbox" id="cbox3" name="cbox3" value="checkbox" /><br />
+                    <input type="text" id="respuesta4" name="respuesta4"><input type="checkbox" id="cbox4" name="cbox4" value="checkbox" /><br />
+                </div>
+            </div>
             
-            <div class="pregunta">
-                <input type="text" id="pregunta" name="pregunta">
-                <label>Escriba la pregunta</label>
+            <div class="button">
+                <button type="submit" id="add" class="btn">Agregar otra pregunta</button>
             </div>
-            <div class="respuestas">
-                <input type="text" id="respuesta1" name="respuesta1"><input type="checkbox" id="cbox1" name="cbox1" value="checkbox" /><br />
-                <input type="text" id="respuesta2" name="respuesta2"><input type="checkbox" id="cbox2" name="cbox2" value="checkbox" /><br />
-                <input type="text" id="respuesta3" name="respuesta3"><input type="checkbox" id="cbox3" name="cbox3" value="checkbox" /><br />
-                <input type="text" id="respuesta4" name="respuesta4"><input type="checkbox" id="cbox4" name="cbox4" value="checkbox" /><br />
+            <div class="button">
+                <button type="button" id="limpiar" class="btn">Limpiar</button>
             </div>
-        </div>
-        
-        <div class="button">
-            <button type="submit" id="add" class="btn">Agregar otra pregunta</button>
-        </div>
-        <div class="button">
-            <button type="button" id="limpiar" class="btn">Limpiar</button>
         </div>
     </form>
 

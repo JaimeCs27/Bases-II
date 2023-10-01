@@ -4,6 +4,9 @@ const app = express()
 const path = require("path")
 const port = 3000; // Cambia el puerto según tu preferencia
 const multer = require('multer')
+const GridFsStorage = require('multer-gridfs-storage')
+const Grid = require('gridfs-stream')
+const methodOverride = require('method-override')
 const storage = multer.memoryStorage()
 const upload = multer({ storage })
 const bodyParser = require('body-parser')
@@ -12,6 +15,7 @@ const bcrypt = require('bcrypt')
 const userLoging = []
 var currentCourse = []
 var questions = []
+var files = []
 
 //Conexion con Raven
 const { DocumentStore, GetServerWideExternalReplicationOperation, DocumentInfo } = require('ravendb');
@@ -30,6 +34,8 @@ mongoose.connect(uri, {
 .then(db => console.log('Mongo is connected'))
 .catch(err => console.log(err))
 const collection = require("./src/mongodb.js")
+
+
 
 
 //Conexion con Neoj4
@@ -87,6 +93,7 @@ const publicPath = path.join(__dirname, 'public')
 console.log(publicPath);
 app.set('view engine', 'ejs')
 app.set('views', path.join(__dirname, 'views'))
+app.use(methodOverride('_method'))
 app.use(express.static(publicPath))
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:true}));
@@ -97,8 +104,12 @@ app.get('/', (req, res) => {
 
 app.post('/menuCrearEvaluacion', async function(req, res){
   const course = await collection.find({id : req.body.codigo})
-  console.log(course)
   res.render('crearEvaluacion', {course : course[0]})
+})
+
+app.post('/menuCrearSeccion', async function(req, res){
+  const course = await collection.find({id : req.body.codigo})
+  res.render('crearSeccion', {course : course[0]})
 })
 
 app.post("/cursoDetallesPublicados", async function(req, res){
@@ -124,6 +135,7 @@ app.post("/miCursoDetalles", async function(req, res){
 })
 
 app.get("/setCurso", async function(req, res){
+  questions = []
   currentCourse = []
   try{
     const courses = await collection.find({})
@@ -145,6 +157,7 @@ app.get("/setCurso", async function(req, res){
 })
 
 app.get("/setMainPage", function(req, res){
+  questions = []
   const usuario = ravenSession.query({username:userLoging[0]})
   currentCourse = []
   res.render('mainPage', {user:usuario})
@@ -161,7 +174,13 @@ app.get('/detallesCreado', async function(req, res){
 
 app.get('/evaluacionesCreado', async function(req, res){
   const curso = currentCourse[0]
+  console.log(curso)
   res.render('evaluacionCursoCreado', {course : curso})
+})
+
+app.get('/seccionesMiCurso', async function(req, res){
+  const curso = currentCourse[0]
+  res.render('seccionesMiCurso', {course : curso})
 })
 
 app.get('/detallesMatriculado', async function(req, res){
@@ -184,7 +203,10 @@ app.get('/seccionesMatriculado', async function(req, res){
   res.render('secciones', {course : curso})
 })
 
+
+
 app.get("/setFindCourses", async function(req, res){
+  questions = []
   currentCourse = []
   try{
     const courses = await collection.find({})
@@ -196,6 +218,7 @@ app.get("/setFindCourses", async function(req, res){
 
 app.get("/setEnrollment", async function(req, res){
   currentCourse = []
+  questions = []
   try{
     const courses = await collection.find({})
     const user = userLoging[0]
@@ -362,6 +385,30 @@ app.post("/addEvaluation", async function(req, res){
   }catch(error){
     console.log(error)
   }
+})
+
+app.post("/addFile", upload.single('file'), async function(req, res){
+  const file = req.file
+  const data = {
+    name: req.body.titulo,
+    document: file.buffer,
+    mimetype: file.mimetype
+  }
+  files.push(data)
+})
+
+app.post('/addSection', async function(req, res){
+  const idCurso = req.body.codigo
+  console.log(idCurso)
+  const result = await collection.updateOne(
+    {id : idCurso},
+    {$push : {
+      sections: {
+        description: req.body.nombreSeccion,
+        documents: files
+      }
+    }} 
+  )
 })
 
 app.post("/enroll", async function(req, res){

@@ -16,7 +16,8 @@ const courseSchema = new Schema ({
             [
                 {
                     name: String,
-                    document: Buffer
+                    document: Buffer,
+                    mimetype: String
                 }
             ]
         }
@@ -47,6 +48,15 @@ const courseSchema = new Schema ({
         }
     ]
 })
+
+courseSchema.virtual('imgSrc').get(function () {
+    if (this.sections[1].documents[1].document != null) {
+        const base64EncodedDocument = this.sections[1].documents[1].document.toString('base64');
+        return `data:${this.sections[1].documents[1].mimetype};charset=utf-8;base64,${base64EncodedDocument}`;
+    }
+});
+
+
 
 const collection = new mongoose.model("Courses", courseSchema)
 module.exports = collection
