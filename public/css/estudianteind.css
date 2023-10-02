@@ -58,6 +58,9 @@ header{
     transform: scaleX(1);
 }
 
+
+
+
 .info{
     color:#fff;
     justify-content: center;
@@ -74,11 +77,11 @@ header{
     margin-top: 60px;
     margin-left: 20px;
     font-weight: 200; 
-    font-size: 1em;
+    font-size: 1.15em;
 } 
 
 .btn {
-    width: 160%;
+    width: 100%;
     height: 30px;
     background: #fff;
     border-radius: 40px;
@@ -90,13 +93,29 @@ header{
     font-weight: 500;
     margin-right: 15px;
     margin-top:0px;
+}
 
+.btn2 {
+    width: 100%;
+    height: 20px;
+    background: transparent;
+    border-radius: 40px;
+    outline: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1em;
+    color: #fff;
+    font-weight: 500;
+    margin-top: 0px;
+    margin-bottom: 15px;
+    text-align: left;
+    
 }
 
 .botones {
     display: flex;
     margin-left: 20px;
-    
+    gap: 15px;
 }
 
 

@@ -17,8 +17,8 @@
             <a href="/setCurso">Cursos creados</a>
             <a href="/setEnrollment">Cursos matriculados</a>
             <a href="/setFindCourses">Cursos publicados</a>
-            <a href="#">Contactos</a>
-            <a href="#">Mensajes</a>
+            <a href="/setContactos">Contactos</a>
+            <a href="/setMensajes">Mensajes</a>
         </nav>
     </header>
 
@@ -32,12 +32,15 @@
             <a href="/evaluacionesMatriculado">Evaluaciones</a>
             <a href="/estudiantesMatriculado">Estudiantes</a>
             <a href="/seccionesMatriculado">Secciones</a>
-        </nav> 
-        <input type="hidden" name="codigo" value="<%= course.id %>">
+            <a href="/notasMatriculado">Notas</a>
+        </nav>
+        
         
         <div class="estudiantes"></div>
         <% course.students.forEach(function(student) { %>
-            <form action='/verPersona' method="post">  
+            <form action='/verPersona' method="post">
+                <input type="hidden" name="codigo" value="<%= course.id %>">
+                <input type="hidden" name="user" value="<%= student.user %>">
                 <button type="submit" class="btn2"><%= student.user %></button>
             </form>
         <% }); %>

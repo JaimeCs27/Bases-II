@@ -4,7 +4,9 @@ const app = express()
 const path = require("path")
 const port = 3000; // Cambia el puerto según tu preferencia
 const multer = require('multer')
-const GridFsStorage = require('multer-gridfs-storage')
+const { 
+  GridFsStorage 
+} = require('multer-gridfs-storage')
 const Grid = require('gridfs-stream')
 const methodOverride = require('method-override')
 const storage = multer.memoryStorage()
@@ -35,7 +37,14 @@ mongoose.connect(uri, {
 .catch(err => console.log(err))
 const collection = require("./src/mongodb.js")
 
-
+let bucket;
+mongoose.connection.on("connected", () => {
+  var db = mongoose.connections[0].db;
+  bucket = new mongoose.mongo.GridFSBucket(db, {
+    bucketName: "newBucket"
+  });
+  //console.log(bucket);
+});
 
 
 //Conexion con Neoj4
@@ -188,9 +197,74 @@ app.get('/detallesMatriculado', async function(req, res){
   res.render('cursoMatriculadoDetalle', {course : curso})
 })
 
+app.get('/notasMatriculado', async function(req, res){
+  const curso = currentCourse[0]
+  const usuario = await ravenSession.load("Users/"+userLoging[0])
+  console.log(usuario)
+  res.render('notas', {course : curso, user: usuario})
+})
+
+app.post('/verPersona', async function(req, res) {
+  const matriculados = [];
+  const creados = [];
+  const usuario = await ravenSession.load('Users/' + req.body.user);
+
+  // Utiliza Promise.all para esperar a que todas las búsquedas se completen.
+  const matriculadosPromises = usuario.cursosMatriculados.map(async function(curso) {
+    const result = await collection.find({ id: curso.codigo });
+    matriculados.push(result[0]);
+  });
+
+  const creadosPromises = usuario.cursosCreados.map(async function(curso) {
+    const aux = await collection.find({ id: curso.codigo });
+    creados.push(aux[0]);
+  });
+
+  await Promise.all(matriculadosPromises);
+  await Promise.all(creadosPromises);
+  const miUsuario = await ravenSession.load('Users/' + userLoging[0]);
+  res.render('Persona', { matriculados: matriculados, creados: creados, student: usuario, user: miUsuario });
+});
+
+app.get('/setContactos', async function(req, res){
+  const result = await neo4jSession.run('MATCH (n:Users {username: $user})-[r:FriendOf]->(a:Users) RETURN a', {user: userLoging[0]});
+  const friendsId = []
+  const friends = []
+  
+  result.records.forEach(function(record){
+    friendsId.push(record._fields[0].properties)
+  })
+
+  
+  const friendsPromises = friendsId.map(async function(friend){
+    const f = await ravenSession.load("Users/"+friend.username);
+    return f;
+  });
+
+  const loadedFriends = await Promise.all(friendsPromises);
+
+  res.render('contactos', { friends: loadedFriends });
+});
+
+
+app.post('/agregarContacto', async function(req, res){
+  const current = userLoging[0]
+  const friend = req.body.user
+  try{
+    await neo4jSession.run('MATCH (user1:Users {username:$current}),(user2:Users {username:$friend}) MERGE(user1)-[:FriendOf]->(user2)', { current, friend })
+    await neo4jSession.run('MATCH (user1:Users {username:$current}),(user2:Users {username:$friend}) MERGE(user2)-[:FriendOf]->(user1)', { current, friend });
+
+    console.log('Relación de amistad creada con éxito.');
+  }catch(error){
+    console.log(error)
+  }
+})
+
 app.get('/evaluacionesMatriculado', async function(req, res){
   const curso = currentCourse[0]
-  res.render('Evaluaciones', {course : curso})
+  const usuario = await ravenSession.load("Users/"+userLoging[0])
+  console.log(usuario)
+  res.render('Evaluaciones', {course : curso, user: usuario})
 })
 
 app.get('/estudiantesMatriculado', async function(req, res){
@@ -203,7 +277,16 @@ app.get('/seccionesMatriculado', async function(req, res){
   res.render('secciones', {course : curso})
 })
 
-
+app.post('/hacerEvaluacion', async function(req, res){
+  const curso = await collection.find({id: req.body.codigo})
+  var eval = []
+  console.log(req.body.evaluation)
+  curso[0].evaluations.forEach(function(evaluation){
+    if(evaluation.code == req.body.evaluation)
+      eval = evaluation
+  })
+  res.render('hacerEvaluacion', {course : curso[0], evaluation: eval})
+})
 
 app.get("/setFindCourses", async function(req, res){
   questions = []
@@ -214,6 +297,42 @@ app.get("/setFindCourses", async function(req, res){
   }catch(error){
     console.log(error)
   }
+})
+
+app.post('/entregarEvaluacion', async function(req,res){
+  const curso = await collection.find({id: req.body.codigo})
+  var eval = []
+  curso[0].evaluations.forEach(function(evaluation){
+    if(evaluation.code == req.body.evaluation)
+      eval = evaluation
+  })
+  const body = req.body
+  var buenas = 0
+  var preguntas = 0
+  eval.questions.forEach(function(question){
+    const pregunta = body[question.question]
+    if(question.correct == pregunta){
+      buenas += 1
+    }
+    preguntas += 1
+  })
+  const nota = buenas * 100 / preguntas
+  console.log(nota)
+  const usuario = await ravenSession.load("Users/"+userLoging[0])
+  const data =
+  {
+    evaluation: eval.code,
+    nota: nota
+  }
+  console.log(usuario)
+  usuario.cursosMatriculados.forEach(function(matriculado){
+    
+    if(matriculado.codigo == curso[0].id){
+      console.log(matriculado)
+      matriculado.notas.push(data)
+    }
+  })
+  ravenSession.saveChanges();
 })
 
 app.get("/setEnrollment", async function(req, res){
@@ -427,7 +546,10 @@ app.post("/enroll", async function(req, res){
         }} 
       )
       const userInfo = await ravenSession.load('Users/'+user)
-      userInfo.cursosMatriculados.push({"codigo": idCurso})
+      userInfo.cursosMatriculados.push({
+        "codigo": idCurso,
+        "notas": []
+      })
       ravenSession.saveChanges()
       return;
     }

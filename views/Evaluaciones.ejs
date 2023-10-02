@@ -17,8 +17,8 @@
             <a href="/setCurso">Cursos creados</a>
             <a href="/setEnrollment">Cursos matriculados</a>
             <a href="/setFindCourses">Cursos publicados</a>
-            <a href="#">Contactos</a>
-            <a href="#">Mensajes</a>
+            <a href="/setContactos">Contactos</a>
+            <a href="/setMensajes">Mensajes</a>
         </nav>
     </header>
 
@@ -31,12 +31,26 @@
             <a href="/evaluacionesMatriculado">Evaluaciones</a>
             <a href="/estudiantesMatriculado">Estudiantes</a>
             <a href="/seccionesMatriculado">Secciones</a>
+            <a href="/notasMatriculado">Notas</a>
         </nav>
         <input type="hidden" name="codigo" value="<%= course.id %>">
         <div class="estudiantes">
             <% course.evaluations.forEach(function(evaluation) { %>
                 <form action="/hacerEvaluacion" method="post">
-                    <button type="submit" class="btn2"><%= evaluation.code %></button>
+                    <% user.cursosMatriculados.forEach(function(matriculado){ %>
+                        <% if (course.id == matriculado.codigo){%>
+                            <% if(matriculado.notas.map(item => item.evaluation).includes(evaluation.code)){%> 
+                                    <input type="hidden" name="codigo" value="<%= course.id %>">
+                                    <input type="hidden" name="evaluation" value="<%= evaluation.code %>">
+                                    <button disabled type="submit" class="btn2"><%= evaluation.code %></button>
+                                <% } else { %>
+                                    <input type="hidden" name="codigo" value="<%= course.id %>">
+                                    <input type="hidden" name="evaluation" value="<%= evaluation.code %>">
+                                    <button type="submit" class="btn2"><%= evaluation.code %></button>
+                                <% }%>
+                        <% }%>
+                    <% }); %>
+                    
                 </form>
             <% }); %>
         </div>

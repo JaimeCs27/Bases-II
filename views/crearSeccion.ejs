@@ -17,8 +17,8 @@
             <a href="/setCurso">Cursos creados</a>
             <a href="/setEnrollment">Cursos matriculados</a>
             <a href="/setFindCourses">Cursos publicados</a>
-            <a href="#">Contactos</a>
-            <a href="#">Mensajes</a>
+            <a href="/setContactos">Contactos</a>
+            <a href="/setMensajes">Mensajes</a>
         </nav>
     </header>
 
@@ -33,15 +33,6 @@
             <input type="text" name="titulo" placeholder="Titulo del archivo" required>
             <button type="submit" class="btn">Agregar Documento</button>
         </form>
-
-        
-
-        <% if (course && course.imgSrc) { %>
-            <div class="images">
-                <img src="<%= course.imgSrc %>">
-            </div>
-        <% } %>
-        
 
         <form action="/addSection" name="SeccionForm" method="post">
             <input type="hidden" name="codigo" value="<%= course.id %>">

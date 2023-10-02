@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE-edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title> TecVegetal </title>
-    <link rel="stylesheet" href="css/persona.css">
+    <link rel="stylesheet" href="css/estudianteind.css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 </head> 
 
@@ -13,36 +13,44 @@
     <header>
         <h2 class="logo"><img src="css/Imagenes/Logo Tec.png"></h2>
         <nav class="navigation">
-            <a href="#">Mi Perfil</a>
-            <a href="#">Cursos creados</a>
-            <a href="#">Cursos matriculados</a>
-            <a href="#">Cursos publicados</a>
-            <a href="#">Contactos</a>
-            <a href="#">Mensajes</a>
+            <a href="/setMainPage">Mi Perfil</a>
+            <a href="/setCurso">Cursos creados</a>
+            <a href="/setEnrollment">Cursos matriculados</a>
+            <a href="/setFindCourses">Cursos publicados</a>
+            <a href="/setContactos">Contactos</a>
+            <a href="/setMensajes">Mensajes</a>
         </nav>
     </header>
-
     <div class="form-box personaInfo">
-        <form action="personaInfo" name="personaInfoForm" method="post">
         <div class="info">
-            <label>NOMBRE DEL ESTUDIANTE</label>
+            <label><%= student.nombre%></label>
         </div>
         <div class = "botones">
-            <button type="submit" class="btn">Escribir mensaje</button>
-            <button type="submit" class="btn">Agregar contacto</button>
+            <form action="/escribirMensaje" method="post">
+                <button type="submit" class="btn">Escribir mensaje</button>
+            </form>
+            <form action="/agregarContacto" method="post">
+                <input type="hidden" name="user" value="<%= student.username %>">
+                <button type="submit" class="btn">Agregar contacto</button>
+            </form>
         </div>
-        <nav class="navigation1">
-            <a href="#">Cursos matriculados</a>
-            <a href="#">Cursos creados</a>
-        </nav>
-
         <div class="detalles">
-            <p>Curso 1 </p>
-            <p>Curso 2</p>
-            <p>Curso 3 </p>
-
+            <strong><p>Cursos Matriculados</p></strong>
+            <% matriculados.forEach(function(matriculado){%>
+                <p><%= matriculado.id%></p>
+            <%})%>
+            <br>
+            <strong><p>Cursos Creados</p></strong>
+            <% creados.forEach(function(creado){%>
+                <form action="/cursoDetallesPublicados" method="post">
+                    <button type="submit" class="btn2"><%= creado.id %></button>
+                    <input hidden type="text" value="<%= creado.id %>" name="input">
+                </form>
+            <%})%>
         </div>
     </div>
+
+
 
 </body>
 </html>

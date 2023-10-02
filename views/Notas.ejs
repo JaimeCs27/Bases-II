@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE-edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title> TecVegetal </title>
-    <link rel="stylesheet" href="css/curso.css">
+    <link rel="stylesheet" href="css/mensaje.css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 </head> 
 
@@ -19,33 +19,30 @@
             <a href="/setFindCourses">Cursos publicados</a>
             <a href="/setContactos">Contactos</a>
             <a href="/setMensajes">Mensajes</a>
-        </nav>
+        </nav>`
     </header>
 
     <div class="form-box seccion">
-        <form action="cursoDetalle" name="detalleCursoForm" method="post">
         <div class="info">
             <label>Curso 1</label>
         </div>
-
         <nav class="navigation1">
-            <a href="/detallesCreado">Detalles</a>
-            <a href="/evaluacionesCreado">Evaluaciones</a>
-            <a href="/estudiantesMiCurso">Estudiantes</a>
-            <a href="/seccionesMiCurso">Secciones</a>
-        </nav> 
-
+            <a href="/detallesMatriculado">Detalles</a>
+            <a href="/evaluacionesMatriculado">Evaluaciones</a>
+            <a href="/estudiantesMatriculado">Estudiantes</a>
+            <a href="/seccionesMatriculado">Secciones</a>
+            <a href="/notasMatriculado">Notas</a>
+        </nav>
         <input type="hidden" name="codigo" value="<%= course.id %>">
-        <div class="detalles">
-            <p>Código: <%= course.id%></p>
-            <p>Descripción: <%= course.description%></p>
-            <p>Fecha de inicio: <%= course.start%></p>
-            <p>Fecha de finalización: <%= course.end%></p>
-        </div>
-        <div class="boton">
-            <button type="submit" class="btn">Clonar curso</button>
+        <div class="estudiantes">
+                    <% user.cursosMatriculados.forEach(function(matriculado){ %>
+                        <% if (course.id == matriculado.codigo){%>
+                            <% matriculado.notas.forEach(function(userEval){%> 
+                                    <button disabled type="submit" class="btn2"><%= userEval.evaluation %> Nota: <%= userEval.nota %> </button>
+                            <% })%>
+                        <%}%>
+                    <% }); %>
         </div>
     </div>
 
 </body>
-</html>

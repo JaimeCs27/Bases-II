@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang ="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE-edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> TecVegetal </title>
+    <link rel="stylesheet" href="css/hacerEvaluacion.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+</head> 
+
+<body>
+    <header>
+        <h2 class="logo"><img src="css/Imagenes/Logo Tec.png"></h2>
+        <nav class="navigation">
+            <a href="/setMainPage">Mi Perfil</a>
+            <a href="/setCurso">Cursos creados</a>
+            <a href="/setEnrollment">Cursos matriculados</a>
+            <a href="/setFindCourses">Cursos publicados</a>
+            <a href="/setContactos">Contactos</a>
+            <a href="/setMensajes">Mensajes</a>
+        </nav>
+    </header>
+    <form action="/entregarEvaluacion" method="post">
+        <input type="hidden" name="codigo" value="<%=course.id%>">
+        <input type="hidden" name="evaluation" value="<%=evaluation.code %>">
+    <div class="formEvaluacion">
+        <% evaluation.questions.forEach(function(question){%>
+        <div class="evaluacion">
+            
+            <div class="pregunta">
+                <%= question.question%><br />
+            </div>
+            <div class="respuestas">
+                <input type="radio" name="<%=question.question%>" value="1" /> <%=question.opcion1%><br />
+                <input type="radio" name="<%=question.question%>" value="2" /> <%=question.opcion2%><br />
+                <input type="radio" name="<%=question.question%>" value="3" /> <%=question.opcion3%><br />
+                <input type="radio" name="<%=question.question%>" value="4" /> <%=question.opcion4%><br />
+            </div>
+        </div>
+        <% }) %>
+
+        <div class="button">
+            <button type="submit" class="btn">Enviar evaluación</button>
+        </div>
+    </div>
+</form>
+</body>
+</html>
