@@ -403,7 +403,6 @@ app.post("/register",upload.single('profile_pic'), async function(req, res){
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(req.body.passR, salt);
       const user = req.body.usernameR;
-
       var password = hashedPassword;
       var nombre = req.body.nombre_completo;
       var fechaNacimiento = req.body.fecha_nacimiento
@@ -420,6 +419,10 @@ app.post("/register",upload.single('profile_pic'), async function(req, res){
         "@metadata": {
           "@collection": "Users"
         }
+      }
+      if(fechaNacimiento > Date.now()){
+        console.log('No se anadio el usuario porque la fecha de nacimiento es incorrecta')
+        return;
       }
       ravenSession.store(usuario, 'Users/'+user)
       ravenSession.advanced.attachments.store('Users/'+user, file.originalname, file.buffer, file.mimetype)
@@ -463,6 +466,14 @@ app.post("/createCourse", async function(req, res){  // SE OCUPA EL USUARIO DE L
     var description = req.body.curso_desc
     var start = req.body.curso_start
     var end = req.body.curso_end
+    if(start < Date.now()){
+      console.log('No se creo el curso la fecha de inicio es incorrecta')
+      return;
+    }
+    if(start > end){
+      console.log('No se creo el curso la fecha de inicio es mayor a la fecha de finalizacion')
+      return;
+    }
     const data = {
       id: cursoId,
       name: nombre,

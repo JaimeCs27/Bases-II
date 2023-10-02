@@ -29,6 +29,9 @@
                 <div>
                     <form action="/miCursoDetalles" method="post">
                     <label class="labelCurso"><%= course.name %> </label>
+                    <% if(course.end < Date.now()){%>
+                        <label class="labelCurso"> Curso finalizado </label>
+                    <% }%>
                     <input type="text" value="<%= course.id %>" name="input" hidden>
                     <button type="submit" class="btn" name="curso" >
                         Ver Detalles

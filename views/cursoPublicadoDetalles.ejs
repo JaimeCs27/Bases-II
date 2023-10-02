@@ -37,11 +37,12 @@
             <p>Descripción: <%= course.description%></p>
             <p>Fecha de inicio: <%= course.start%></p>
             <p>Fecha de finalización: <%= course.end%></p>
-            
         </div>
         
         <div class="boton">
-            <button type="submit" formaction="/enroll" formmethod="post" class="btn">Matricular curso</button>
+            <% if(course.end < Date.now()){%>
+                <button type="submit" formaction="/enroll" formmethod="post" class="btn">Matricular curso</button>
+            <% }%>
         </div>
         </form>
     </div>
