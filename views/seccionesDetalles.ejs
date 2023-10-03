@@ -17,23 +17,29 @@
             <a href="/setCurso">Cursos creados</a>
             <a href="/setEnrollment">Cursos matriculados</a>
             <a href="/setFindCourses">Cursos publicados</a>
+            <a href="/setFindUsers">Burcar Usuarios</a>
             <a href="/setContactos">Contactos</a>
             <a href="/setMensajes">Mensajes</a>
+            <a href="/logOut">Cerrar Sesión</a>
         </nav>
     </header>
 
     <div class="form-box seccion">
         <div class="info">
-            <label><%= course.name %></label>
+            <label>Curso: <%= course.name %></label>
         </div>
         <div class="info">
-            <label><%= section.description %></label>
+            <label>Section: <%= section.description %></label>
         </div>
-        <input type="hidden" name="codigo" value="<%= course.id %>">
+        
+        
+        
     <div class="botones">
     <% section.documents.forEach(function(document) { %>
-        <form action="/verSeccion" method="post">
-        <button type="submit" class="btn2"><%= document.name %></button>
+        <form action="/descargarDocumentos" method="post">
+            <input type="hidden" name="codigo" value="<%= course.id %>">
+            <input type="hidden" name="path" value="<%= document.path %>">
+            <button type="submit" class="btn2"><%= document.name %></button>
         </form>
     <% }); %>
     </div>

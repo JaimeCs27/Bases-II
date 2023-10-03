@@ -17,15 +17,17 @@
             <a href="/setCurso">Cursos creados</a>
             <a href="/setEnrollment">Cursos matriculados</a>
             <a href="/setFindCourses">Cursos publicados</a>
+            <a href="/setFindUsers">Burcar Usuarios</a>
             <a href="/setContactos">Contactos</a>
             <a href="/setMensajes">Mensajes</a>
+            <a href="/logOut">Cerrar Sesión</a>
         </nav>
     </header>
 
     <div class="form-box seccion">
         <form action="cursoDetalle" name="detalleCursoForm" method="post">
         <div class="info">
-            <label>Curso 1</label>
+            <label><%= course.name%></label>
         </div>
 
         <nav class="navigation1">
@@ -43,9 +45,79 @@
             <p>Fecha de finalización: <%= course.end%></p>
         </div>
         <div class="boton">
-            <button type="submit" class="btn">Clonar curso</button>
+            <button type="button" onclick="clonarCurso('<%= course.id %>')" class="btn" >Clonar curso</button>
         </div>
-    </div>
+
+        <div id = 'clonar'>
+        </div>
+
+    </div>  
+    <script>
+        function clonarCurso(e){
+            const div = document.createElement('div')
+            div.innerHTML = ''
+            const form = document.createElement('form')
+            form.action = '/clonarCurso'
+            form.method = 'post'
+
+            const codigo = document.createElement('input')
+            codigo.type = 'text'
+            codigo.name = 'codigo'
+            codigo.className = 'input'
+
+            const input = document.createElement('input')
+            input.type = 'text'
+            input.value = e
+            input.name = 'codigoCurso'
+            input.hidden = true
+
+            console.log(e)
+
+            const nombre = document.createElement('input')
+            nombre.type = 'text'
+            nombre.name = 'nombre'
+            nombre.className = 'input'
+
+            const start = document.createElement('input')
+            start.type = 'date'
+            start.name = 'inicio'
+
+            const end = document.createElement('input')
+            end.type = 'date'
+            end.name = 'final'
+
+            const confirmar = document.createElement('button')
+            confirmar.type = 'submit'
+            confirmar.className ='btn'
+            confirmar.name = 'boton'
+            confirmar.textContent = 'Aceptar'
+
+            const cancelar = document.createElement('button')
+            cancelar.type = 'button'
+            cancelar.className ='btn'
+            cancelar.name = 'boton'
+            cancelar.textContent = 'cancelar'
+            cancelar.onclick = limpiar
+
+            form.appendChild(codigo)
+            form.appendChild(nombre)
+            form.appendChild(input)
+            form.appendChild(start)
+            form.appendChild(end)
+            form.appendChild(confirmar)
+            form.appendChild(cancelar)
+
+            div.appendChild(form)
+
+            clonar.innerHTML = '';
+            clonar.appendChild(div)
+
+        }
+
+        function limpiar(){
+            clonar.innerHTML = ''
+        }
+    </script>
 
 </body>
 </html>

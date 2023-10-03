@@ -17,8 +17,10 @@
             <a href="/setCurso">Cursos creados</a>
             <a href="/setEnrollment">Cursos matriculados</a>
             <a href="/setFindCourses">Cursos publicados</a>
+            <a href="/setFindUsers">Burcar Usuarios</a>
             <a href="/setContactos">Contactos</a>
             <a href="/setMensajes">Mensajes</a>
+            <a href="/logOut">Cerrar Sesión</a>
         </nav>
     </header>
 
@@ -40,7 +42,9 @@
         </div>
         
         <div class="boton">
-            <% if(course.end < Date.now()){%>
+            <% console.log(new Date(course.end).getTime())%>
+            <% console.log(Date.now())%>
+            <% if(new Date(course.end).getTime() > Date.now()){%>
                 <button type="submit" formaction="/enroll" formmethod="post" class="btn">Matricular curso</button>
             <% }%>
         </div>

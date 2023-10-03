@@ -31,14 +31,14 @@
             </div>
         </div>
         <div class="cursos-container" id="cursosPublicadosForm">
-                <% courses.forEach(function(course) { %>
+                <% users.forEach(function(user) { %>
                     <!-- Agregar un if para verificar si el curso coincide con la búsqueda -->
-                    <form action="/cursoDetallesPublicados" method="post">
-                        <img src="<%= course.imgPath %>" width="150" height="150">
-                        <label class="labelCurso"><%= course.name %> </label>
-                        <input type="text" value="<%= course.id %>" name="input" hidden>
-                        <button type="submit" class="btn" name="curso" >
-                            Ver Detalles
+                    <form action="/verPersona" method="post">
+                        <img src="<%= user.path.substring(7) %>" width="150" height="150">
+                        <label class="labelCurso"><%= user.nombre %> </label>
+                        <input type="text" value="<%= user.username %>" name="user" hidden>
+                        <button type="submit" class="btn" name="btnsd" >
+                            Ver Usuario
                         </button>
                     </form>
                 <% }); %> 
@@ -48,7 +48,7 @@
         function sendData(e) {
             const div = document.createElement('div');
             div.innerHTML = '';
-                fetch('getCourses', {
+                fetch('getUsers', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ payload: e.value })
@@ -63,28 +63,28 @@
     
                     payload.forEach((item) => {
                         const form = document.createElement('form')
-                        form.action = '/cursoDetallesPublicados'
+                        form.action = '/verPersona'
                         form.method = 'post'
 
                         const input = document.createElement('input')
                         input.type = 'text'
-                        input.value = item.id
-                        input.name = 'input'
+                        input.value = item.username
+                        input.name = 'user'
                         input.hidden = true
 
                         const label = document.createElement('label');
                         label.className = 'labelCurso';
-                        label.textContent = item.name;
+                        label.textContent = item.nombre;
     
                         const button = document.createElement('button');
                         button.type = 'submit';
                         button.className = 'btn';
                         button.name = 'curso';
                         button.value = item.name;
-                        button.textContent = 'Ver Detalles';
+                        button.textContent = 'Ver Usuario';
 
                         const img = document.createElement('img');
-                        img.src = item.imgPath; // Reemplaza 'imageURL' con la propiedad real de la imagen
+                        img.src = item.path.substring(7); // Reemplaza 'imageURL' con la propiedad real de la imagen
                         img.width = 150
                         img.height = 150
                         form.appendChild(img); // Agrega la imagen antes del botón

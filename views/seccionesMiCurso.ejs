@@ -17,8 +17,10 @@
             <a href="/setCurso">Cursos creados</a>
             <a href="/setEnrollment">Cursos matriculados</a>
             <a href="/setFindCourses">Cursos publicados</a>
+            <a href="/setFindUsers">Burcar Usuarios</a>
             <a href="/setContactos">Contactos</a>
             <a href="/setMensajes">Mensajes</a>
+            <a href="/logOut">Cerrar Sesión</a>
         </nav>
     </header>
 
@@ -37,7 +39,9 @@
     <div class="botones">
     <% course.sections.forEach(function(section) { %>
         <form action="/verSeccion" method="post">
-        <button type="submit" class="btn2"><%= section.description %></button>
+            <input type="hidden" name="codigo" value="<%= course.id %>">
+            <input type="hidden" name="desc" value="<%= section.description %>">
+            <button type="submit" class="btn2"><%= section.description %></button>
         </form>
     <% }); %>
     <form action="/menuCrearSeccion" method="post">

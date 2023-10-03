@@ -17,19 +17,25 @@
             <a href="/setCurso">Cursos creados</a>
             <a href="/setEnrollment">Cursos matriculados</a>
             <a href="/setFindCourses">Cursos publicados</a>
+            <a href="/setFindUsers">Burcar Usuarios</a>
             <a href="/setContactos">Contactos</a>
             <a href="/setMensajes">Mensajes</a>
+            <a href="/logOut">Cerrar Sesión</a>
         </nav>
-
+    </header>
 
         <div class="form-box register">
-            <form action="/editUser" name="registerForm" method="post">
+            <form action="/editUser" name="registerForm" method="post" enctype="multipart/form-data">
             <div class="info">
                 <h3>Información Personal</h3>
             </div>
             <div class="input-pic">
-                <input type="file" accept="image/jpg, image/jpeg, image/png">
+                <input type="file" name="profilePic" id="profilePicInput" accept="image/jpg, image/jpeg, image/png">
                 <label>Foto perfil</label>
+            </div>
+            <div id="profilePicPreview" class="profile-pic-preview">
+                <!-- La imagen se mostrará aquí si ya existe -->
+                <img src="<%= pathImg.path%>">
             </div>
             <div class="input-box">
                 <i class='bx bxs-user'></i>
@@ -47,14 +53,42 @@
                 <label>Nombre Completo</label>
             </div>
             <div class="input-date">
-                <input type="date" name="fecha_nacimiento" required>
+                <input type="date" name="fecha_nacimiento" value="<%= user.fechaNacimiento %>">
                 <label>Fecha Nacimiento</label>
-            </div>
+            </div>            
             <button type="submit" class="btn">Actualizar</button>
             
             </form>
         </div>
-    </header>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const profilePicInput = document.getElementById('profilePicInput');
+            const profilePicPreview = document.getElementById('profilePicPreview');
+
+            profilePicInput.addEventListener('change', function () {
+                const file = profilePicInput.files[0];
+                if (file) {
+                    const reader = new FileReader();
+
+                    reader.onload = function (e) {
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        console.log(img.src)
+                        img.alt = 'Foto de perfil';
+                        img.className = 'profile-pic'; // Agrega la clase CSS
+                        profilePicPreview.innerHTML = ''; // Limpia el contenido anterior
+                        profilePicPreview.appendChild(img);
+                    };
+
+                    reader.readAsDataURL(file);
+                } else {
+                    profilePicPreview.innerHTML = ''; // Borra la vista previa si no se selecciona una imagen
+                }
+            });
+        });
+    </script>
+        
+        
 
     
 </body>

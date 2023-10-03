@@ -37,6 +37,12 @@ header{
     margin-left: 40px;
 }
 
+.profile-pic-preview img {
+    max-width: 150px; /* Define el ancho máximo de la imagen */
+    max-height: 150px; /* Define la altura máxima de la imagen */
+}
+
+
 .navigation a::after{
     content: '';
     position: absolute;

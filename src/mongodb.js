@@ -8,6 +8,7 @@ const courseSchema = new Schema ({
     description: String,
     start: Date,
     end: Date,
+    imgPath: String,
     sections:
     [
         {
@@ -15,9 +16,8 @@ const courseSchema = new Schema ({
             documents: 
             [
                 {
-                    name: String,
-                    document: Buffer,
-                    mimetype: String
+                    path: String,
+                    name: String
                 }
             ]
         }

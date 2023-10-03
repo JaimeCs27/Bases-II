@@ -17,15 +17,17 @@
             <a href="/setCurso">Cursos creados</a>
             <a href="/setEnrollment">Cursos matriculados</a>
             <a href="/setFindCourses">Cursos publicados</a>
+            <a href="/setFindUsers">Burcar Usuarios</a>
             <a href="/setContactos">Contactos</a>
             <a href="/setMensajes">Mensajes</a>
+            <a href="/logOut">Cerrar Sesión</a>
         </nav>
     </header>
 
     <div class="form-box seccion">
         <form action="evaluaciones" name="evaluacionesForm" method="post">
         <div class="info">
-            <label>Curso 1</label>
+            <label><%= course.name%></label>
         </div>
         <nav class="navigation1">
             <a href="/detallesCreado">Detalles</a>

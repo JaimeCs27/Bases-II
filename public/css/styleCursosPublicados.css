@@ -1,0 +1,120 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap");
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: rgba(30, 38, 53, 1);
+    top: 60px;
+}
+
+header{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 20px 50px;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 99;
+}
+
+.navigation a{
+    position: relative;
+    left: 250px;
+    top: -40px;
+    font-size: 1.1em;
+    color: #fff;
+    text-decoration: none;
+    font-weight: 500;
+    margin-left: 40px;
+}
+
+.navigation a::after{
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -6px;
+    width: 100%;
+    height: 3px;
+    background: #fff;
+    border-radius: 5px;
+    transform: scaleX(0);
+    transition: transform .5s;
+}
+
+.navigation a:hover::after{
+    transform: scaleX(1);
+}
+
+.navigation a:hover::after{
+    transform: scaleX(1);
+}
+
+/* Estilo para la imagen dentro del botón */
+.form-box .btn img {
+    max-width: 100px; /* Establece el ancho máximo de la imagen */
+    height: auto; /* Mantén la proporción de la imagen */
+    display: block; /* Evita problemas de alineación */
+    margin: 0 auto 10px; /* Centra la imagen debajo del botón */
+}
+
+.todojunto{
+    display: inline-block;
+}
+
+/* Estilo para la barra de búsqueda */
+.search-box {
+    position: fixed; /* Cambia a posición fija */
+    top: 0; /* Fija la barra en la parte superior */
+    left: 0;
+    width: 35%;
+    background: rgba(30, 38, 53, 1); /* Establece un fondo */
+    padding: 20px 0;
+    z-index: 100; /* Asegura que esté por encima de otros elementos */
+    transform: translate(100%, 100%);
+}
+
+.input-box {
+    display: block; /* Cambia a bloque para centrar horizontalmente */
+    margin: 0 auto;
+}
+
+#search-box {
+    width: 80%; /* Ajusta el ancho según sea necesario */
+    padding: 10px;
+    border: none;
+    border-bottom: 2px solid #fff;
+    outline: none;
+    background: transparent;
+    color: #fff;
+    font-size: 16px;
+}
+
+/* Añade espacio en la parte superior del contenido para evitar que se solape con la barra de búsqueda */
+.form-box.cursosPublicados{
+    margin: 100px;
+    scroll-margin: 100px;
+    overflow-y: auto;
+}
+
+.labelCurso {
+    color: #fff;
+    font-size: 18px;
+}
+
+.cursos-container {
+    margin-top: 150px; /* Ajusta el valor según sea necesario */
+    max-height: calc(75vh - 120px); /* Resta la altura de la barra de búsqueda y el encabezado */
+    overflow-y: auto; /* Agrega una barra de desplazamiento vertical si es necesario */
+    overflow-x: auto;
+}
+

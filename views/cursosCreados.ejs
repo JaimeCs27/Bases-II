@@ -17,8 +17,10 @@
             <a href="/setCurso">Cursos creados</a>
             <a href="/setEnrollment">Cursos matriculados</a>
             <a href="/setFindCourses">Cursos publicados</a>
+            <a href="/setFindUsers">Burcar Usuarios</a>
             <a href="/setContactos">Contactos</a>
             <a href="/setMensajes">Mensajes</a>
+            <a href="/logOut">Cerrar Sesión</a>
         </nav>
     </header>
 
@@ -29,7 +31,7 @@
                 <div>
                     <form action="/miCursoDetalles" method="post">
                     <label class="labelCurso"><%= course.name %> </label>
-                    <% if(course.end < Date.now()){%>
+                    <% if(new Date(course.end).getTime() < Date.now()){%>
                         <label class="labelCurso"> Curso finalizado </label>
                     <% }%>
                     <input type="text" value="<%= course.id %>" name="input" hidden>

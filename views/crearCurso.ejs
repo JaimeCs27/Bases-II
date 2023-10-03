@@ -17,17 +17,19 @@
             <a href="/setCurso">Cursos creados</a>
             <a href="/setEnrollment">Cursos matriculados</a>
             <a href="/setFindCourses">Cursos publicados</a>
+            <a href="/setFindUsers">Burcar Usuarios</a>
             <a href="/setContactos">Contactos</a>
             <a href="/setMensajes">Mensajes</a>
+            <a href="/logOut">Cerrar Sesión</a>
         </nav>
 
         <div class="form-box curso">
-            <form action="/createCourse" name="CursoForm" method="post">
+            <form action="/createCourse" name="CursoForm" method="post" enctype="multipart/form-data">
             <div class="info">
                 <h3>Crear curso</h3>
             </div>
             <div class="input-pic">
-                <input type="file" accept="image/jpg, image/jpeg, image/png" name="file" enctype="multipart/form-data" required>
+                <input type="file" accept="image/jpg, image/jpeg, image/png" name="file" id="file" required>
                 <label>Foto del curso</label>
             </div>
             <div class="input-box">
